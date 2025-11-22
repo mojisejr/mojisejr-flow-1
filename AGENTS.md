@@ -19,17 +19,72 @@
 - ❌ **NEVER commit sensitive data** (API keys, passwords, secrets) - Use environment variables
 - ❌ **NEVER skip 100% validation** (build, lint, test) - Must pass completely
 - ❌ **NEVER use git push --force** - Only use --force-with-lease when absolutely necessary
-- ❌ **NEVER implement without task issue** - Must use =plan command first
+- ❌ **NEVER implement without task issue** - Must use /plan command first
 
 ### 📋 MANDATORY WORKFLOW RULES
 
 - ✅ **ALWAYS** sync main branch before any implementation: `git checkout main && git pull origin main`
-- ✅ **ALWAYS** verify task issue exists: `#[issue-number]` before `=impl`
+- ✅ **ALWAYS** verify task issue exists: `#[issue-number]` before `/impl`
 - ✅ **ALWAYS** use feature branch naming: `feature/task-[issue-number]-[description]`
 - ✅ **ALWAYS** ensure 100% build success before commit: `cargo build --release`
 - ✅ **ALWAYS** ensure 100% clippy pass before commit: `cargo clippy --all-targets --all-features`
 - ✅ **ALWAYS** use template-guided workflow with proper context validation
 - ✅ **ALWAYS** verify code formatting: `cargo fmt -- --check`
+
+---
+
+## 📊 Response Quality Standards (MANDATORY)
+
+### 1. **On-Point (ตรงประเด็น)**
+- Answer only what was asked
+- No out-of-scope information
+- Cut unnecessary details
+
+### 2. **Good Context Ordering**
+- Simple to complex progression
+- Start with robust answer first
+- Gradually increase complexity
+- Order information for easy comprehension
+
+### 3. **Exact Details (ยึดมั่นในรายละเอียด)**
+- Provide accurate and specific information
+- Reference actual file, function, variable names
+- No hallucinating about code or structure
+- Verify assumptions before answering
+
+### 4. **Security-First Focus (โฟกัสความปลอดภัย)**
+- Always consider security implications
+- Recommend secure approach first
+- Warn about potential risks
+- Explain why approach is secure
+
+### 5. **Senior Developer Mindset**
+- Provide unbiased feedback
+- Answer directly and straightforwardly
+- Demonstrate expertise in domain
+- Use best practices for technology stack
+
+---
+
+## 🌐 Response Language Policy
+
+### Automatic Language Matching (MANDATORY)
+
+- **If user asks in Thai** → Respond in Thai (ยกเว้น technical terms)
+- **If user asks in English** → Respond in English
+- **Mixed language** → Follow the primary language of the question
+- **Technical terms** → Always use English (Rust, Cargo, PostgreSQL, etc.)
+
+### Examples
+
+**User (Thai)**: "ทำไม queue ถึง fail ?"
+**Agent (Thai)**: "จากการวิเคราะห์ queue system ใน `src/queue/` พบว่า..."
+
+**User (English)**: "Why is the queue failing?"
+**Agent (English)**: "After analyzing the queue system in `src/queue/`, I found..."
+
+**User (Mixed)**: "explain ว่า database connection pool ทำงานยังไง"
+**Agent (Thai)**: "Connection pool ใน database ทำงานแบบ... (code examples use English)"
 
 ---
 
@@ -60,20 +115,20 @@
 
 ### Mode-Based Execution System
 
-**Default Mode**: MANUAL (human implementation)
+**Default Mode**: MANUAL (agent implementation)
 
 **Mode Commands**:
 
 ```bash
-=mode manual     # Tasks assigned to human developer
-=mode copilot     # Tasks assigned to @copilot
-=mode status      # Show current execution mode
+/mode manual     # Tasks assigned to agent (Claude)
+/mode copilot     # Tasks assigned to @copilot
+/mode status      # Show current execution mode
 ```
 
 **Mode-Specific Behavior**:
 
-- **MANUAL Mode**: `=plan` creates tasks assigned to human, `=impl` waits for human implementation
-- **COPILOT Mode**: `=plan` creates tasks assigned to @copilot, `=impl` triggers copilot implementation
+- **MANUAL Mode**: `/plan` creates tasks assigned to agent, `/impl` triggers agent implementation using code editing tools
+- **COPILOT Mode**: `/plan` creates tasks assigned to @copilot, `/impl` triggers copilot implementation
 
 ### Core Commands
 
@@ -83,6 +138,10 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 ```bash
 # Mode Management
 /mode [manual|copilot|status]  # Set or show execution mode
+
+# Analysis & Planning
+/pck [issue-number]            # Plan check - analyze task before impl
+/aud [question]                # Audit - analyze codebase and answer
 
 # Context Management
 /fcs [topic-name]              # Create new Context GitHub Issue
@@ -95,9 +154,9 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 /pr [feedback]                 # Create Pull Request from feature branch (to staging)
 
 # Knowledge Management
-/khub                          # 🔍 Read Knowledge Hub #102 (MANDATORY first step)
+/khub                          # 🔍 Read Knowledge Hub (MANDATORY first step)
 /kupdate [category] "[topic]"  # Create Knowledge GitHub Issue (CHECK existing numbers!)
-/klink [knowledge-issue-number] # Link knowledge entry to Knowledge Hub #102
+/klink [knowledge-issue-number] # Link knowledge entry to Knowledge Hub
 /ksync                         # Synchronize Knowledge Hub with all entries
 /ksearch "[query]"             # Search across all knowledge entries
 /krecent                       # Show last 5 knowledge updates
@@ -110,7 +169,7 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 =fcs > [topic-name]           # Create new Context GitHub Issue
 =plan > [task description]    # Create Task GitHub Issue
 =impl > [issue-number]        # Implementation workflow
-=khub                         # Read Knowledge Hub #102
+=khub                         # Read Knowledge Hub
 # ... (all other = commands still work)
 ```
 
@@ -176,8 +235,8 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 
 **Post-Implementation**:
 
-- **MANUAL Mode**: User commits and pushes, then uses `=pr` to create PR
-- **COPILOT Mode**: Agent handles complete implementation including PR creation via `=pr`
+- **MANUAL Mode**: Agent implements and pushes to feature branch, user uses `/pr` to create PR
+- **COPILOT Mode**: GitHub Copilot implements and pushes to feature branch, user uses `/pr` to create PR
 
 ---
 

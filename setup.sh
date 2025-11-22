@@ -3,6 +3,8 @@
 # - Prompts for repository URL and the `claude` CLI command/alias
 # - Uses the provided claude CLI to generate an updated `CLAUDE.md` with project-specific metadata
 # - Shows a diff and asks before overwriting
+# - Validates presence of new workflow directories (.claude/, .github/)
+# - Checks for all 16 slash commands and agent instructions
 
 set -euo pipefail
 
@@ -29,7 +31,20 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --help)
-      echo "Usage: setup.sh [--skip-create] [--repo REPO_URL]"
+      echo "Usage: setup.sh [--skip-create] [--repo REPO_URL] [--yes] [--mark-template]"
+      echo
+      echo "Options:"
+      echo "  --skip-create      Skip GitHub repo creation (use existing origin)"
+      echo "  --repo REPO_URL    Pre-fill repository URL"
+      echo "  --yes              Assume 'yes' to all prompts"
+      echo "  --mark-template    Mark created repo as GitHub template"
+      echo "  --help             Show this help message"
+      echo
+      echo "This script sets up a new project from the workflow template by:"
+      echo "  1. Validating workflow directories (.claude/, .github/)"
+      echo "  2. Creating a new GitHub repository (optional)"
+      echo "  3. Updating CLAUDE.md with project-specific metadata"
+      echo "  4. Preserving all workflow rules and command definitions"
       exit 0
       ;;
     *)
@@ -49,6 +64,31 @@ echo "Template setup helper"
 echo
 if [ ! -f CLAUDE.md ]; then
   echo "Warning: CLAUDE.md not found in repository root. Please ensure you run this from the template repo root." >&2
+fi
+
+# Validate new workflow structure (November 2025 update)
+echo "Checking workflow template structure..."
+REQUIRED_DIRS=(".claude/commands" ".github/agents" ".github/instructions")
+MISSING_DIRS=()
+for dir in "${REQUIRED_DIRS[@]}"; do
+  if [ ! -d "$dir" ]; then
+    MISSING_DIRS+=("$dir")
+  fi
+done
+
+if [ ${#MISSING_DIRS[@]} -gt 0 ]; then
+  echo "⚠️  Warning: Missing workflow directories:" >&2
+  for dir in "${MISSING_DIRS[@]}"; do
+    echo "   - $dir" >&2
+  done
+  echo "Please ensure this template includes the latest November 2025 updates with .claude/ and .github/ directories." >&2
+  read -r -p "Continue anyway? (y/N): " continue_anyway
+  if [[ ! "$continue_anyway" =~ ^[Yy]$ ]]; then
+    echo "Setup cancelled. Please update the template and try again." >&2
+    exit 1
+  fi
+else
+  echo "✓ All workflow directories found"
 fi
 
 if [ -n "${REPO_URL_ARG:-}" ]; then
@@ -189,7 +229,7 @@ if [ "$USE_CLAUDE" = true ]; then
 You are an editing assistant. I will provide the current 'CLAUDE.md' file contents and some project inputs.
 
 Task:
-- Update the 'CLAUDE.md' file to fill in project-specific metadata (PROJECT_NAME, REPOSITORY_URL, AUTHOR_NAME, EMAIL) and make any small, safe adjustments to the "Technical Architecture" placeholders to reflect the detected or provided stack. Do NOT change or remove the workflow rules, safety rules, slash command definitions, or templates—preserve them exactly unless a small clarification is required.
+- Update the 'CLAUDE.md' file to fill in project-specific metadata (PROJECT_NAME, REPOSITORY_URL, AUTHOR_NAME, EMAIL) and make any small, safe adjustments to the "Technical Architecture" placeholders to reflect the detected or provided stack. Do NOT change or remove the workflow rules, safety rules, slash command definitions (all 16 commands), Response Quality Standards, Language Matching Policy, or templates—preserve them exactly unless a small clarification is required.
 
 Inputs:
 - REPOSITORY_URL: ${REPO_URL}
@@ -197,9 +237,16 @@ Inputs:
 
 Instructions:
 1) Only replace high-level placeholder lines at the top of the file and the technical-architecture example entries where doing so makes the doc more project-relevant. Keep placeholders like [PRIMARY_LANGUAGE], [FRAMEWORK], etc., when the stack is ambiguous.
-2) Do not change the command lists, templates, rules, or step-by-step workflows.
+2) Do not change the command lists (all 16 slash commands), templates, rules, Response Quality Standards, Language Matching Policy, or step-by-step workflows.
 3) If you update values, add a short single-line comment under each replaced value indicating it was auto-filled by the setup script (e.g., "<!-- auto-filled by setup.sh -->").
 4) Output ONLY the full updated file contents (raw markdown) with no additional commentary.
+
+This template includes November 2025 updates:
+- 16 slash commands including /pck (plan check) and /aud (audit)
+- Response Quality Standards (5-point framework)
+- Automatic Language Matching Policy (Thai/English)
+- Agent instructions in .github/agents/
+- Response instructions in .github/instructions/
 
 Here is the current file (begin CLAUDE.md):
 -----BEGIN-CLAUDE-MD-----
@@ -261,10 +308,40 @@ if [[ "$accept" =~ ^[Yy]$ ]]; then
   fi
   cp "$NEW_FILE" CLAUDE.md
   echo "Updated CLAUDE.md written. Please review the file and commit the change.";
-  echo "Suggested git commands:"
+  echo
+  echo "Verifying workflow template structure..."
+  
+  # Verify critical workflow files
+  CRITICAL_FILES=(".claude/settings.local.json" "AGENTS.md" ".github/instructions/response.instructions.md")
+  MISSING_FILES=()
+  for file in "${CRITICAL_FILES[@]}"; do
+    if [ ! -f "$file" ]; then
+      MISSING_FILES+=("$file")
+    fi
+  done
+  
+  if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+    echo "⚠️  Warning: Missing critical workflow files:" >&2
+    for file in "${MISSING_FILES[@]}"; do
+      echo "   - $file" >&2
+    done
+  else
+    echo "✓ All critical workflow files present"
+  fi
+  
+  echo
+  echo "Suggested next steps:"
+  echo "  1. Review the updated CLAUDE.md file"
+  echo "  2. Customize tech stack placeholders if needed (search for [PRIMARY_LANGUAGE], [FRAMEWORK], etc.)"
+  echo "  3. Read docs/USAGE.md for command reference"
+  echo "  4. Commit the changes:"
   echo
   echo "  git add CLAUDE.md"
   echo "  git commit -m \"chore: update CLAUDE.md with project metadata (run setup.sh)\""
+  echo
+  echo "Your project is ready! Use the slash commands:"
+  echo "  /mode, /fcs, /plan, /pck, /aud, /impl, /pr"
+  echo "  /khub, /kupdate, /klink, /ksync, /ksearch, /krecent, /kcategory, /rrr"
   echo
 else
   echo "Update declined. Proposed file remains at: $NEW_FILE"
