@@ -26,7 +26,7 @@ When creating a task issue:
    - Verify `docs/TASK-ISSUE-TEMP.md` template exists
    - Get current execution mode from `/mode`
 
-2. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+2. **Setup .tmp folder**: `mkdir -p .tmp && if ! grep -q "^\.tmp/$" .gitignore 2>/dev/null; then echo ".tmp/" >> .gitignore; fi`
 
 3. **Create temporary content**:
    - Generate issue body in `.tmp/task-content.md`

@@ -1,24 +1,24 @@
-# init
+# initp
 
 Project Initialization - Automatically integrate workflow template into any project by analyzing project context and updating all template configurations.
 
 ## Usage
 
 ```
-/init
+/initp
 ```
 
-**Note**: This is a Claude Code slash command using `/` prefix. This command should be run once after cloning the workflow template into any project.
+**Note**: This is a custom Claude Code slash command using `/` prefix. This command should be run once after cloning the workflow template into any project. (Renamed from `/init` to avoid conflicts with built-in command)
 
 ## Examples
 
 ```bash
-/init                          # Initialize workflow for current project
+/initp                         # Initialize workflow for current project
 ```
 
 ## Implementation
 
-The `/init` command is implemented using the Node.js utility script at `.claude/utils/project-init.js`.
+The `/initp` command is implemented using the Node.js utility script at `.claude/utils/project-init.js`.
 
 ### Execution
 
@@ -271,6 +271,12 @@ GIT_REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "Not set")
 4. Use /pr [feedback] to create pull requests
 
 🎉 Your workflow is ready to use!
+
+## Command Name Note
+
+This command was renamed from `/init` to `/initp` to avoid conflicts with Claude Code's built-in `/init` command. Both commands serve different purposes:
+- **Built-in `/init`**: Claude Code's internal initialization
+- **Custom `/initp`**: Workflow template integration for this project
 ```
 
 ### Error Handling
@@ -278,7 +284,7 @@ GIT_REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "Not set")
 **Missing PRD.md for New Project**:
 ```bash
 ❌ New project detected but PRD.md not found.
-Please create PRD.md with project requirements or use /init on an existing project.
+Please create PRD.md with project requirements or use /initp on an existing project.
 ```
 
 **Unsupported Technology Stack**:
@@ -304,13 +310,13 @@ Manual configuration may be required in CLAUDE.md.
 ### Template Maintenance
 
 **Manual Overrides**:
-- After `/init` completes, you can manually adjust any settings
+- After `/initp` completes, you can manually adjust any settings
 - Update CLAUDE.md with project-specific requirements
 - Modify command templates as needed
 - Add custom project structure documentation
 
 **Re-initialization**:
-- Safe to run `/init` multiple times
+- Safe to run `/initp` multiple times
 - Will update configurations based on current project state
 - Preserves manual customizations
 
@@ -330,14 +336,14 @@ Manual configuration may be required in CLAUDE.md.
 
 ## Best Practices
 
-### Before Running /init
+### Before Running /initp
 
 1. **Ensure Git Repository**: Project should be a git repository
 2. **Install Dependencies**: Required language tools should be installed
 3. **GitHub CLI**: Install and authenticate with GitHub CLI
 4. **Clean State**: Commit or stash any pending changes
 
-### After Running /init
+### After Running /initp
 
 1. **Review Configuration**: Check CLAUDE.md for accuracy
 2. **Test Commands**: Verify build/test commands work
@@ -346,7 +352,7 @@ Manual configuration may be required in CLAUDE.md.
 
 ### Project Evolution
 
-- **Technology Changes**: Re-run `/init` after major tech stack changes
+- **Technology Changes**: Re-run `/initp` after major tech stack changes
 - **New Dependencies**: Update build commands as needed
 - **Workflow Adjustments**: Modify templates based on team preferences
 
@@ -376,9 +382,10 @@ git push -u origin staging
 
 ## Notes
 
-- **One-Time Setup**: `/init` should be run once when cloning the template
+- **One-Time Setup**: `/initp` should be run once when cloning the template
 - **Safe Operation**: Command is idempotent and can be re-run safely
 - **Template Flexibility**: Works with new projects and existing codebases
 - **Language Agnostic**: Supports Node.js, Rust, Python, Go, and custom setups
 - **Git Integration**: Automatically sets up staging-first workflow
 - **Context Awareness**: Analyzes project structure for intelligent configuration
+- **Name Origin**: Renamed from `/init` to avoid conflicts with Claude Code's built-in command

@@ -20,7 +20,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 ### Pre-Implementation Validation
 
-1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+1. **Setup .tmp folder**: `mkdir -p .tmp && if ! grep -q "^\.tmp/$" .gitignore 2>/dev/null; then echo ".tmp/" >> .gitignore; fi`
 
 2. **Check Dependencies**:
    - Validate GitHub CLI (`gh`) availability

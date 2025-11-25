@@ -20,7 +20,7 @@ Pull Request Creation - Create Pull Request from feature branch to staging.
 
 ### Pre-PR Validation
 
-1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+1. **Setup .tmp folder**: `mkdir -p .tmp && if ! grep -q "^\.tmp/$" .gitignore 2>/dev/null; then echo ".tmp/" >> .gitignore; fi`
 
 2. **Check Dependencies**:
    - Validate GitHub CLI (`gh`) availability

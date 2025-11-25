@@ -23,7 +23,7 @@ When creating a new context issue:
 
 1. **Validate GitHub CLI**: Ensure `gh` command is available
 2. **Check template**: Verify `docs/ISSUE-TEMP.md` exists
-3. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+3. **Setup .tmp folder**: `mkdir -p .tmp && if ! grep -q "^\.tmp/$" .gitignore 2>/dev/null; then echo ".tmp/" >> .gitignore; fi`
 4. **Create temporary content**:
    - Generate issue body in `.tmp/context-content.md`
    - Replace placeholders: `{{TOPIC}}`, `{{DATE}}`, `{{MODE}}`

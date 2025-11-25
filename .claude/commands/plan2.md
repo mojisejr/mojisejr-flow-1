@@ -26,7 +26,7 @@ The `/plan2` command uses the same `docs/TASK-ISSUE-TEMP.md` template as `/plan`
 
 ### Quick Complexity Analysis
 
-1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+1. **Setup .tmp folder**: `mkdir -p .tmp && if ! grep -q "^\.tmp/$" .gitignore 2>/dev/null; then echo ".tmp/" >> .gitignore; fi`
 
 2. **Complexity Check** (5-10 seconds max):
    ```javascript
