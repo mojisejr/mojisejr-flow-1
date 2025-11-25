@@ -31,15 +31,17 @@ Knowledge Update - Create knowledge GitHub Issues with structured learning and a
 
 ### Pre-Creation Validation
 
-1. **Check Dependencies**:
+1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+
+2. **Check Dependencies**:
    - Validate GitHub CLI (`gh`) availability
    - Verify `docs/KNOWLEDGE-TEMP.md` template exists
 
-2. **Category Validation**:
+3. **Category Validation**:
    - Validate category is in allowed list
    - Provide error with valid categories if invalid
 
-3. **Critical: Duplicate Prevention**:
+4. **Critical: Duplicate Prevention**:
    - **MANDATORY**: Prompt user to run `/khub` first
    - Show pre-creation checklist
    - Explain common mistakes to avoid
@@ -64,8 +66,9 @@ Knowledge Update - Create knowledge GitHub Issues with structured learning and a
 
 ### Issue Creation
 
-1. **Template Processing**:
-   - Read `docs/KNOWLEDGE-TEMP.md` template
+1. **Create temporary content**:
+   - Generate issue body in `.tmp/knowledge-content.md`
+   - Process `docs/KNOWLEDGE-TEMP.md` template
    - Replace placeholders:
      - `{{KNOWLEDGE_ID}}` - Generated ID (e.g., KNOW-DEVICE-003)
      - `{{CATEGORY}}` - Category name
@@ -75,10 +78,12 @@ Knowledge Update - Create knowledge GitHub Issues with structured learning and a
 2. **Create GitHub Issue**:
    - Title: `{knowledge-id}: {topic}`
    - Labels: `knowledge`, `knowledge-{category}`
-   - Body: Processed template content
+   - Body: Use `--body-file .tmp/knowledge-content.md`
    - Repository: Current repository
 
-3. **Display Results**:
+3. **Cleanup temporary files**: `rm .tmp/knowledge-content.md`
+
+4. **Display Results**:
    - Show issue URL and number
    - Display generated knowledge ID
    - Show category and topic information

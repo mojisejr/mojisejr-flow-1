@@ -20,21 +20,32 @@ Pull Request Creation - Create Pull Request from feature branch to staging.
 
 ### Pre-PR Validation
 
-1. **Check Dependencies**:
+1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+
+2. **Check Dependencies**:
    - Validate GitHub CLI (`gh`) availability
    - Verify Git tools are available
 
-2. **Validate Environment**:
+3. **Validate Environment**:
    - Ensure clean git working directory
    - Verify we're on a feature branch
    - Check branch follows naming: `feature/task-{issue}-{description}`
    - Confirm branch is pushed to remote
    - Verify staging branch exists
 
-3. **Extract Issue Information**:
+4. **Extract Issue Information**:
    - Parse issue number from branch name
    - Validate issue exists and is a task
-   - Get issue title and description
+   - Get issue title and description to `.tmp/issue-info.md`
+
+5. **Create PR Body Template**:
+   - Generate PR body content in `.tmp/pr-body.md`
+   - Include all validation results and issue information
+
+6. **Create Pull Request**:
+   - Use `--body-file .tmp/pr-body.md` for PR creation
+
+7. **Cleanup temporary files**: `rm .tmp/issue-info.md .tmp/pr-body.md`
 
 ### Pre-PR Validations (100% Required)
 

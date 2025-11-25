@@ -23,17 +23,20 @@ When creating a new context issue:
 
 1. **Validate GitHub CLI**: Ensure `gh` command is available
 2. **Check template**: Verify `docs/ISSUE-TEMP.md` exists
-3. **Create GitHub Issue**:
+3. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+4. **Create temporary content**:
+   - Generate issue body in `.tmp/context-content.md`
+   - Replace placeholders: `{{TOPIC}}`, `{{DATE}}`, `{{MODE}}`
+5. **Create GitHub Issue**:
    - Title: `[CONTEXT] {topic-name}`
    - Labels: `context`
-   - Body: Use `docs/ISSUE-TEMP.md` template
-   - Replace placeholders: `{{TOPIC}}`, `{{DATE}}`, `{{MODE}}`
-4. **Track context**: Add to `.claude/active_contexts` file
-5. **Display results**: Show issue URL and next steps
+   - Body: Use `--body-file .tmp/context-content.md`
+6. **Cleanup temporary files**: `rm .tmp/context-content.md`
+7. **Display results**: Show issue URL and next steps
 
 When listing active contexts:
 
-1. **Read tracker**: Parse `.claude/active_contexts` file
+1. **Search GitHub Issues**: Find all issues with `context` label
 2. **Display list**: Show issue numbers and topics
 3. **Provide guidance**: Suggest next actions
 
@@ -47,7 +50,6 @@ Uses `docs/ISSUE-TEMP.md` template which contains:
 ## Files
 
 - `docs/ISSUE-TEMP.md` - Context issue template
-- `.claude/active_contexts` - Tracks active context issues
 - GitHub Issues - Stores context discussions
 
 ## Integration

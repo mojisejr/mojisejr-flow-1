@@ -2,7 +2,7 @@
 
 This repository contains a production-ready agent-centric workflow template with required docs, issue/task templates, and comprehensive agent instructions. Use this repository as a GitHub template for future projects.
 
-**Latest Update:** November 2025 - Enhanced with Response Quality Standards, Language Policy, and advanced commands (/pck, /aud)
+**Latest Update:** November 2025 - Enhanced with .tmp folder enforcement, Response Quality Standards, Language Policy, and advanced commands (/pck, /aud)
 
 Quick goals:
 - Keep workflow rules, safety policies, and command templates intact.
@@ -16,7 +16,7 @@ Files you should see in the root:
 - `docs/ISSUE-TEMP.md` — context issue template
 - `docs/TASK-ISSUE-TEMP.md` — atomic task issue template
 - `docs/KNOWLEDGE-TEMP.md` — knowledge capture template
-- `.claude/commands/` — 16 slash command definitions (mode, fcs, plan, pck, aud, impl, pr, khub, kupdate, klink, ksync, ksearch, krecent, kcategory, rrr)
+- `.claude/commands/` — 18 slash command definitions (init, mode, fcs, plan, plan2, pck, aud, impl, pr, khub, kupdate, klink, ksync, ksearch, krecent, kcategory, rrr)
 - `.claude/settings.local.json` — agent permissions and settings configuration
 - `.github/agents/` — agent-specific instruction files (7 files)
 - `.github/instructions/` — core response standards and domain-specific guidance (9 files)
@@ -43,13 +43,20 @@ Files you should see in the root:
   - Technical terms always in English
 
 ### 🏗️ New Directory Structure
-- `.claude/commands/` — 16 slash command implementations
+- `.claude/commands/` — 18 slash command implementations
 - `.claude/settings.local.json` — permissions and configuration
 - `.github/agents/` — 7 agent-specific instruction files
 - `.github/instructions/` — 9 core response and domain guidance files
 
-### 📚 Complete Command Suite (16 Total)
-`/mode` • `/fcs` • `/plan` • `/pck` • `/aud` • `/impl` • `/pr` • `/khub` • `/kupdate` • `/klink` • `/ksync` • `/ksearch` • `/krecent` • `/kcategory` • `/rrr`
+### 📁 Enhanced Temporary File Management
+- **Strict .tmp folder enforcement** — All temporary files created in project `.tmp/` folder only
+- **Automatic cleanup** — Temporary files removed immediately after each operation
+- **Zero system temp usage** — Never uses `/tmp/` or `$TEMP` directories
+- **Auto gitignore** — `.tmp/` automatically added to `.gitignore`
+- **Security-focused** — Project-scoped temporary file management
+
+### 📚 Complete Command Suite (18 Total)
+`/init` • `/mode` • `/fcs` • `/plan` • `/plan2` • `/pck` • `/aud` • `/impl` • `/pr` • `/khub` • `/kupdate` • `/klink` • `/ksync` • `/ksearch` • `/krecent` • `/kcategory` • `/rrr`
 
 Quick start (macOS, zsh)
 
@@ -60,7 +67,13 @@ git clone https://github.com/<your-account>/<template-repo>.git my-project
 cd my-project
 ```
 
-2) Run the setup helper to populate `CLAUDE.md` with project metadata. The script will ask for your repository URL and the `claude` CLI alias (if you use a custom alias):
+2) Initialize the workflow template for your specific project:
+
+```bash
+/init                          # Automatically integrate workflow for your project
+```
+
+3) (Optional) Run the setup helper to populate additional `CLAUDE.md` metadata. The script will ask for your repository URL and the `claude` CLI alias (if you use a custom alias):
 
 ```bash
 ./setup.sh
@@ -132,32 +145,54 @@ This ensures high test coverage and code quality from the start.
 ## Workflow Architecture
 
 ```
-Context Discussion (/fcs)
+🚀 Project Initialization (/init) - MANDATORY FIRST STEP
+- Analyze PRD.md or existing codebase
+- Auto-configure workflow commands
+- Set up Git staging workflow
+- Initialize project context tracking
          ↓
-     Planning (/plan, /pck)
+Context Discussion (/fcs)
+- Create context GitHub Issues
+- Iterative discussion and planning
+- Accumulate project context
+- Auto .tmp folder management for issue content
+         ↓
+     Planning (/plan OR /plan2)
+/plan: Detailed atomic tasks with comprehensive analysis
+/plan2: Rapid tasks with complexity validation
+- Create atomic task GitHub Issues
+- Test-first requirements specification
+- Same template, different modes (rapid vs detailed)
+- Auto .tmp folder management for task content
          ↓
   Pre-Implementation Check (/pck, /aud)
+- Codebase analysis for dependencies
+- Validate implementation approach
+- Security and architecture review
          ↓
   Implementation (/impl)
-  - Red Phase: Write tests
-  - Green Phase: Implement code
-  - Refactor Phase: Improve quality
+  - Red Phase: Write failing tests
+  - Green Phase: Implement minimal code
+  - Refactor Phase: Improve code quality
+  - Auto .tmp folder management for issue metadata
          ↓
   Full Validation:
-  - Build: 100% success
-  - Lint: 0 warnings
-  - Format: Consistent
-  - Tests: All passing
+  - Build: 100% success ([build command])
+  - Lint: 0 warnings ([lint command])
+  - Format: Consistent ([format command])
+  - Tests: All passing ([test command])
          ↓
    Pull Request (/pr)
   - Feature branch → staging
   - Validation report included
-  - Ready for review
+  - Ready for team review
+  - Auto .tmp folder management for PR content
          ↓
   Knowledge Capture (/kupdate, /klink)
-  - Document learnings
-  - Link to knowledge hub
-  - Make discoverable
+  - Document learnings and insights
+  - Link to centralized knowledge hub
+  - Make discoveries discoverable
+  - Auto .tmp folder management for knowledge content
 ```
 
 ## Response Quality Standards (Mandatory)
@@ -179,3 +214,37 @@ The template automatically matches user language:
 - **Technical terms** — Always use English (Rust, Cargo, PostgreSQL, etc.)
 
 This ensures better communication and context preservation.
+
+## 📁 Temporary File Management (Critical Security Feature)
+
+All workflow commands enforce strict `.tmp` folder usage for temporary files:
+
+### 🚨 Strict Enforcement Policy
+- **NEVER** uses system temp directories (`/tmp/`, `$TEMP`)
+- **ALWAYS** creates temporary files in project `.tmp/` folder only
+- **ALWAYS** cleans up temporary files immediately after use
+- **ALWAYS** adds `.tmp/` to `.gitignore` automatically
+
+### 🔒 Security Benefits
+- **Project-scoped**: No temporary files left in system directories
+- **Automatic cleanup**: Zero pollution of file systems
+- **Git-safe**: Temporary files never committed accidentally
+- **Performance**: Project-local file operations are faster
+
+### 📋 Commands with .tmp Folder Integration
+- `/fcs` - Context issue creation with `.tmp/context-content.md`
+- `/plan`, `/plan2` - Task creation with `.tmp/task-content.md`
+- `/impl` - Implementation workflow with `.tmp/issue-details.md`
+- `/pr` - Pull request with `.tmp/issue-info.md` and `.tmp/pr-body.md`
+- `/kupdate` - Knowledge creation with `.tmp/knowledge-content.md`
+
+### 💡 Zero Manual Setup Required
+Every command automatically handles:
+```bash
+mkdir -p .tmp && echo ".tmp/" >> .gitignore
+# Create temporary file in .tmp/
+# Use with GitHub CLI --body-file .tmp/[filename]
+# rm .tmp/[filename] (automatic cleanup)
+```
+
+This approach ensures clean, secure, and efficient temporary file management across the entire workflow.

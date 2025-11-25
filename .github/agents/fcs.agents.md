@@ -52,8 +52,8 @@ A specialized GitHub agent that creates and manages context discussions using te
 - **PLANNING READINESS CHECKLIST**: For validation before task creation
 
 ### Context Management
-1. **Tracker File**: `.claude/active_contexts` tracks active contexts
-2. **Listing**: Parse and display all active context issues
+1. **GitHub Issues**: All contexts tracked as GitHub Issues with `context` label
+2. **Listing**: Search and display all context issues from GitHub
 3. **Updates**: Add to existing context issues for continuity
 4. **Status Management**: Track progression through development phases
 
@@ -103,7 +103,6 @@ Displays:
 ## Files
 
 - `docs/ISSUE-TEMP.md` - Context issue template
-- `.claude/active_contexts` - Tracks active context issues
 - GitHub Issues - Stores context discussions
 
 ## Context Status Management

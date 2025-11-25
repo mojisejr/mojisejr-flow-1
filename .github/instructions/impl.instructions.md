@@ -33,18 +33,22 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 ### Pre-Implementation Validation
 
-1. **Check Dependencies**:
+1. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+
+2. **Check Dependencies**:
    - Validate GitHub CLI (`gh`) availability
    - Verify Git tools are available
 
-2. **Validate Issue**:
+3. **Validate Issue**:
    - Check issue exists and is open
    - Verify issue has `task` label
-   - Extract issue title and metadata
+   - Extract issue title and metadata to `.tmp/issue-details.md`
 
-3. **Validate Environment**:
+4. **Validate Environment**:
    - Ensure clean git working directory
    - Verify we're in a git repository
+
+5. **Cleanup temporary files**: `rm .tmp/issue-details.md` (only if no other temp files exist)
 
 ### Implementation Steps
 
@@ -200,7 +204,8 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 
 ## Integration
 
-- **Before**: Use `/plan [task]` to create task issues
+- **Prerequisite**: Use `/init` to set up project workflow (MANDATORY first step)
+- **Before**: Use `/plan [task]` OR `/plan2 [task]` to create task issues
 - **After**: Use `/pr [feedback]` to create pull request
 - **Mode**: Use `/mode [manual|copilot]` to set execution mode
 - **Context**: Use `/fcs [topic]` for context discussions

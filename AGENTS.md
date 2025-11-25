@@ -5,7 +5,7 @@
 **Repository**: [REPOSITORY_URL]
 **Author**: [AUTHOR_NAME] <[EMAIL]>
 
-**Description**: Generic, reusable agent workflow and implementation template. This repository documents mandatory agent safety rules, workflow commands, templates, and the implementation checklist used by automated agents and developers. Replace placeholders with project-specific metadata when adapting this template.
+**Description**: Generic, reusable agent workflow and implementation template. Use this repository to document mandatory agent safety rules, workflow commands, templates, and the implementation checklist used by automated agents and developers. Replace placeholders with project-specific metadata when adapting this template.
 
 ---
 
@@ -19,23 +19,78 @@
 - ❌ **NEVER commit sensitive data** (API keys, passwords, secrets) - Use environment variables
 - ❌ **NEVER skip 100% validation** (build, lint, test) - Must pass completely
 - ❌ **NEVER use git push --force** - Only use --force-with-lease when absolutely necessary
-- ❌ **NEVER implement without task issue** - Must use /plan command first
+- ❌ **NEVER implement without task issue** - Must use =plan command first
+
+### 📁 MANDATORY TEMPORARY FILE MANAGEMENT (CRITICAL)
+
+#### 🚨 STRICT .TMP FOLDER POLICY (NO EXCEPTIONS)
+
+- ❌ **NEVER use system temp directories** (`/tmp/`, `$TEMP`, etc.)
+- ❌ **NEVER create temporary files in project root or other folders**
+- ✅ **ALWAYS create temporary files in `.tmp/` folder ONLY**
+- ✅ **ALWAYS clean up `.tmp/` folder after each operation**
+- ✅ **ALWAYS ensure `.tmp/` folder is in `.gitignore`**
+
+#### 🎯 ENFORCED TEMPORARY FILE WORKFLOW
+
+**1. Pre-Operation Setup**:
+```bash
+# ALWAYS create .tmp folder if it doesn't exist
+mkdir -p .tmp
+# ALWAYS ensure .tmp/ is in .gitignore
+echo ".tmp/" >> .gitignore
+```
+
+**2. Temporary File Creation**:
+```bash
+# ALWAYS use project .tmp folder
+echo "content" > .tmp/temp-file.md
+# NEVER use system temp
+# echo "content" > /tmp/temp-file.md  ❌ FORBIDDEN
+```
+
+**3. Post-Operation Cleanup**:
+```bash
+# ALWAYS clean up .tmp folder after operation
+rm -rf .tmp/*
+# or for specific files
+rm .tmp/temp-file.md
+```
+
+**4. GitHub Issue Content Creation**:
+```bash
+# ALWAYS use .tmp folder for issue content drafts
+echo "Issue content" > .tmp/issue-content.md
+# Create GitHub issue using .tmp file
+gh issue create --title "Title" --body-file .tmp/issue-content.md
+# ALWAYS clean up immediately
+rm .tmp/issue-content.md
+```
+
+#### 🔍 AUTOMATIC VERIFICATION
+
+All commands MUST:
+1. Check `.tmp/` folder exists before operation
+2. Create temporary files ONLY in `.tmp/` folder
+3. Clean up `.tmp/` folder immediately after use
+4. Verify cleanup success before completion
 
 ### 📋 MANDATORY WORKFLOW RULES
 
 - ✅ **ALWAYS** sync staging branch before any implementation: `git checkout staging && git pull origin staging`
-- ✅ **ALWAYS** verify task issue exists: `#[issue-number]` before `/impl`
+- ✅ **ALWAYS** verify task issue exists: `#[issue-number]` before `=impl`
 - ✅ **ALWAYS** use feature branch naming: `feature/task-[issue-number]-[description]`
 - ✅ **ALWAYS** ensure 100% build success before commit: `[build command]`
 - ✅ **ALWAYS** ensure 100% lint pass before commit: `[lint command]`
 - ✅ **ALWAYS** use template-guided workflow with proper context validation
 - ✅ **ALWAYS** verify code formatting: `[format command]`
+- ✅ **ALWAYS** use `.tmp/` folder for temporary files and clean up immediately after use
 
 ---
 
 ## 📊 Response Quality Standards (MANDATORY)
 
-### 1. **On-Point (ตรงประเด็น)**
+### 1. **On-Point**
 - Answer only what was asked
 - No out-of-scope information
 - Cut unnecessary details
@@ -46,13 +101,13 @@
 - Gradually increase complexity
 - Order information for easy comprehension
 
-### 3. **Exact Details (ยึดมั่นในรายละเอียด)**
+### 3. **Exact Details**
 - Provide accurate and specific information
 - Reference actual file, function, variable names
 - No hallucinating about code or structure
 - Verify assumptions before answering
 
-### 4. **Security-First Focus (โฟกัสความปลอดภัย)**
+### 4. **Security-First Focus**
 - Always consider security implications
 - Recommend secure approach first
 - Warn about potential risks
@@ -136,6 +191,9 @@
 All workflow commands are now available as proper Claude Code slash commands (markdown files in `.claude/commands/`).
 
 ```bash
+# Project Setup
+/init                          # Initialize workflow template for current project (IMPORTANT: Run first!)
+
 # Mode Management
 /mode [manual|copilot|status]  # Set or show execution mode
 
@@ -148,7 +206,8 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 /fcs list                      # Show all active Context Issues
 
 # Task Management
-/plan [task description]       # Create Task GitHub Issue using docs/TASK-ISSUE-TEMP.md
+/plan [task description]       # Create detailed Task GitHub Issue using docs/TASK-ISSUE-TEMP.md
+/plan2 [task description]      # Create rapid Task GitHub Issue with complexity validation
 /impl [issue-number]           # Implementation workflow for specific GitHub issue
 /impl [issue-number] [msg]     # Implementation with additional context
 /pr [feedback]                 # Create Pull Request from feature branch (to staging)
@@ -182,21 +241,68 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 - **Validation**: Automatic checking of prerequisites and dependencies
 - **Help System**: All commands support help via detailed documentation
 
+### Command Structure
+
+All slash commands follow this structure:
+- **Usage**: Clear syntax and parameter description
+- **Examples**: Practical usage scenarios
+- **Implementation**: Step-by-step execution details
+- **Integration**: How commands work together
+- **Error Handling**: Common issues and solutions
+- **Files**: Related files and dependencies
+
 ### Template-Driven Workflow Process
+
+**🚀 Phase 0: Project Initialization** (MANDATORY for new projects)
+- `/init` → Automatically integrate workflow template into current project
+- Analyzes PRD.md (if available) or existing codebase
+- Updates all template configurations with project-specific settings
+- Sets up Git workflow and environment validation
 
 1. **Phase 1**: `/fcs [topic]` → Create initial context **GitHub Issue** (NEVER .md file)
 2. **Phase 2**: `/fcs [topic]` → Update context **GitHub Issue** iteratively
 3. **Phase 3**: Context reaches `[Ready for Planning]` status → Ready for planning
-4. **Phase 4**: `/plan [task]` → Create atomic **GitHub Issues** (NEVER .md files)
+4. **Phase 4**: `/plan [task]` OR `/plan2 [task]` → Create atomic **GitHub Issues** (NEVER .md files)
+   - `/plan`: Detailed planning with comprehensive analysis
+   - `/plan2`: Rapid planning with complexity validation
 5. **Phase 5**: `/impl [issue-number]` → Implement specific GitHub issue based on mode
 
 **💡 Enhanced Workflow with Claude Code Slash Commands:**
+- **Step 0**: Always run `/init` first when cloning template to new project
 - Use `/mode [manual|copilot]` to set execution mode
 - Commands processed by Claude Code with intelligent execution
 - Rich documentation and help built into each command
 - Comprehensive error handling and validation
 - All workflows maintain the same template-driven approach
 - Legacy `=` commands remain supported for backward compatibility
+
+### Project Integration with /init
+
+The `/init` command automatically handles project integration for both new and existing projects:
+
+**New Projects (with PRD.md)**:
+- Parses PRD.md for project requirements and technology stack
+- Auto-configures workflow commands based on specified technologies
+- Sets up project structure documentation from requirements
+
+**Existing Projects**:
+- Analyzes codebase to detect language, framework, and dependencies
+- Auto-configures appropriate build/test/lint commands
+- Updates template placeholders with detected project information
+
+**Automatic Configuration**:
+- Updates `CLAUDE.md` with project-specific settings
+- Configures command placeholders (`[build command]`, `[test command]`, etc.)
+- Sets up staging branch workflow
+- Initializes context tracking for the project
+- Validates development environment setup
+
+**Supported Technologies**:
+- **Node.js/TypeScript**: npm/yarn, React, Next.js, Express, Fastify
+- **Rust**: Cargo, Actix-web, Rocket, Axum, Tokio
+- **Python**: pip/poetry, FastAPI, Django, Flask, pytest
+- **Go**: go modules, standard build tools
+- **Custom**: Manual configuration options available
 
 ### Implementation Workflow (MANDATORY)
 
@@ -210,66 +316,44 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 **Implementation Steps**:
 
 1. **Create Feature Branch**: `git checkout -b feature/task-[issue-number]-[description]`
-   - Always branch from **staging** (already synced in pre-checklist)
 
-2. **Step 0: Write Tests First (Red Phase)** ⚠️ MANDATORY:
+2. **🔴 Red Phase (Tests First)** ⚠️ MANDATORY:
    ```bash
-   # Create test files BEFORE implementing code
-   # Tests should fail initially (Red phase)
-   [test command]  # e.g., npm test, cargo test, pytest
-   # Expected: Tests fail (no implementation yet)
-   ```
-   - Write comprehensive unit tests for the new functionality
-   - Write integration tests for API endpoints or service integrations
-   - Tests document the expected behavior before code exists
-   - This ensures Test-Driven Development (TDD) workflow
-
-3. **TDD Green Phase (Minimal Implementation)**:
-   ```bash
-   # Write minimal code to make failing tests pass
-   [test command]      # Must PASS (Green phase)
-   [build command]     # Must pass
+   # Write tests BEFORE code implementation
+   [test command]  # Must FAIL (no implementation yet)
    ```
 
-4. **TDD Refactor Phase (Code Quality)**:
+3. **🟢 Green Phase (Minimal Implementation)**:
    ```bash
-   # Refactor code while keeping tests passing
-   [lint command]      # Must pass
-   [format command]    # Must pass
-   [test command]      # Must still PASS
+   # Write minimal code to make tests pass
+   [test command]  # Must PASS
+   [build command] # Must pass
    ```
 
-5. **Final Validation**:
-   - **Build validation**: `[build command]` (100% success - zero errors/warnings)
-   - **Lint validation**: `[lint command]` (100% pass - zero violations)
-   - **Format validation**: `[format command]` (consistent formatting)
-   - **Type check validation**: `[typecheck command]` (comprehensive type checking)
-   - **Test validation**: `[test command]` (100% pass - zero failures)
+4. **🔵 Refactor Phase (Code Quality)**:
+   ```bash
+   # Improve code while keeping tests passing
+   [lint command]   # Must pass
+   [format command] # Must pass
+   ```
 
-6. **Commit Changes**:
+5. **Final Validation** (100% required):
+   - **Build**: `[build command]` (zero errors/warnings)
+   - **Lint**: `[lint command]` (zero violations)
+   - **Format**: `[format command]` (consistent)
+   - **Tests**: `[test command]` (zero failures)
+   - **Type Check**: `[typecheck command]` (pass)
 
+6. **Commit & Push**:
    ```bash
    git add .
-   git commit -m "feat: [feature description]
-
-   - Address #[issue-number]: [task title]
-   - Test-first implemented: Tests written before code implementation
-   - Red-Green-Refactor cycle followed (Red → Green → Refactor)
-   - Build validation: 100% PASS ([build command])
-   - Lint validation: 100% PASS ([lint command])
-   - Format validation: 100% PASS ([format command])
-   - Type validation: 100% PASS ([typecheck command])
-
-   🤖 Generated with Claude Code
-   Co-Authored-By: Claude <noreply@anthropic.com>"
+   git commit -m "feat: [description] - Address #[issue-number] 🤖"
+   git push -u origin feature/task-[issue-number]-[description]
    ```
 
-7. **Push Branch**: `git push -u origin feature/task-[issue-number]-[description]`
-
 **Post-Implementation**:
-
-- **MANUAL Mode**: Agent implements and pushes to feature branch, user uses `/pr` to create PR
-- **COPILOT Mode**: GitHub Copilot implements and pushes to feature branch, user uses `/pr` to create PR
+- **MANUAL**: User uses `/pr` to create pull request
+- **COPILOT**: Agent creates PR automatically
 
 ---
 
@@ -295,176 +379,94 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 
 ### Knowledge Categories
 
-**Standard Categories**:
-
-- `device` - CU12, KU16, SerialPort, hardware integration
-- `database` - SQLite, Sequelize, migrations, queries
-- `architecture` - Design patterns, structural decisions
-- `debug` - Error solutions, troubleshooting, workarounds
-- `workflow` - Process improvements, automation
-- `frontend` - React, Electron, UI components
-- `backend` - Node.js, APIs, services
+`device` • `database` • `architecture` • `debug` • `workflow` • `frontend` • `backend`
 
 ### Knowledge ID System
 
-**Format**: `KNOW-[CATEGORY]-[NUMBER]`
+**Format**: `KNOW-[CATEGORY]-[NUMBER]` (e.g., `KNOW-DEVICE-001`)
 
-- Example: `KNOW-DEVICE-001`, `KNOW-DATABASE-015`
-- Auto-increment per category
-- Easy reference and cross-linking
+### 🔍 Duplicate Prevention (CRITICAL)
 
-### 🔍 Knowledge ID Conflict Prevention (CRITICAL)
+**Workflow**: `/khub` → Check existing numbers → `/kupdate` → Auto-link
 
-**MANDATORY Pre-Creation Checklist**:
-
-1. **ALWAYS run `=khub` first** - Read Knowledge Hub #102 completely
-2. **Check existing numbers** in your category section (e.g., "Device Knowledge")
-3. **Identify next available number** (if 001, 002 exist, use 003)
-4. **Never assume** - always verify existing entries before creating
-
-**Common Mistakes to Avoid**:
-
-- ❌ Creating KNOW-DEVICE-001 when it already exists
-- ❌ Not checking Knowledge Hub #102 before creating entries
-- ❌ Assuming numbers without verification
-- ❌ Creating duplicate knowledge IDs
-
-**Correct Workflow Example**:
-
-```bash
-# ❌ WRONG (creates duplicate)
-= kupdate device "SHT30 sensor fix"  # Creates KNOW-DEVICE-001 (duplicate!)
-
-# ✅ RIGHT (prevents duplicates)
-= khub                              # Read Knowledge Hub #102
-# See: KNOW-DEVICE-001, KNOW-DEVICE-002 exist
-= kupdate device "SHT30 sensor fix" # Creates KNOW-DEVICE-003 (correct!)
-```
+❌ **Wrong**: Skip `/khub` → Create duplicate ID
+✅ **Right**: `/khub` → Verify → Create correct next number
 
 ### Auto-Label Creation
 
-**System Behavior**:
+**Auto-creates**: `knowledge-[category]` labels + generates `KNOW-[CATEGORY]-[NUMBER]` IDs
 
-```bash
-# When =kupdate device "CU12 lock-back solution" is used:
-# 1. Check if 'knowledge-device' label exists
-# 2. If not, create: gh label create knowledge-device --color "1d76db" --description "Device integration knowledge"
-# 3. Apply label to knowledge issue
-# 4. Auto-generate Knowledge ID: KNOW-DEVICE-001
-```
+### Knowledge Hub Integration
 
-**Knowledge Labels Created Automatically**:
+**Automated Commands**:
+- **`/klink [issue-number]`** - Auto-links knowledge to hub
+- **`/ksync`** - Syncs hub with all knowledge entries
+- **`/kupdate`** - Creates issue + prompts for auto-linking
 
-- `knowledge-device` - Device integration knowledge
-- `knowledge-database` - Database and persistence knowledge
-- `knowledge-architecture` - System design and patterns
-- `knowledge-debug` - Debugging and troubleshooting
-- `knowledge-workflow` - Development workflow improvements
-
-### Enhanced Knowledge Hub Integration
-
-**New Automated Commands**:
-
-**`=klink [knowledge-issue-number]`**:
-
-- Automatically detects category from knowledge issue labels
-- Places knowledge link in appropriate Knowledge Hub section
-- Updates statistics counters
-- Maintains proper markdown formatting
-
-**`=ksync`**:
-
-- Scans all issues with `knowledge-*` labels
-- Synchronizes Knowledge Hub with all existing knowledge entries
-- Updates statistics and distribution
-- Fixes broken links and formatting
-- Ensures hub reflects current knowledge base state
-
-**Enhanced `=kupdate` Workflow**:
-
-1. Creates knowledge GitHub issue ✅
-2. **Automatically prompts**: "Link to Knowledge Hub #102? (y/n)"
-3. If "y": Runs `=klink` automatically ✨
-4. Maintains consistency across knowledge system
-
-**Command Implementation Details**:
-
-**`=klink [issue-number]` Implementation**:
-
-1. **Issue Analysis**: Extract title, labels, and description
-2. **Category Detection**: Parse `knowledge-[category]` label
-3. **Format Entry**: `**KNOW-[CATEGORY]-[NUMBER]**: [Title](issue-link) - Brief description`
-4. **Section Insert**: Add to appropriate "Recent Entries" section
-5. **Statistics Update**: Increment total and category counts
-6. **Timestamp Update**: Set "Last Updated" to current date
-
-**`=ksync` Implementation**:
-
-1. **Knowledge Discovery**: Scan all issues with `knowledge-*` labels
-2. **Category Processing**: Group by label type (device, database, etc.)
-3. **Entry Generation**: Create standardized format for each found issue
-4. **Hub Reconstruction**: Replace all category sections with complete lists
-5. **Statistics Calculation**: Recalculate all counts from scratch
-6. **Format Validation**: Ensure proper markdown structure and valid links
-
-**Hub Integration Benefits**:
-
-- ✅ **No more manual linking required**
-- ✅ **Automatic statistics updates**
-- ✅ **Consistent formatting maintained**
-- ✅ **Centralized knowledge discovery**
-- ✅ **Real-time hub synchronization**
+**Benefits**: Auto-linking ✅ • Consistent formatting ✅ • Centralized discovery ✅
 
 ### Knowledge Search & Retrieval
 
-**Search Capabilities**:
-
+**Search Commands**:
 ```bash
-=ksearch "CU12 lock-back"    # Full-text search across all knowledge
-=kcategory device           # Show all device-related knowledge
-=krecent                    # Last 5 knowledge entries
-=khub                       # Go to main Knowledge Hub issue
-=ksync                      # Synchronize hub with all knowledge entries
-=klink 116                  # Link knowledge issue #116 to hub
+/ksearch "query"    • /kcategory device    • /krecent
+/khub               • /ksync                • /klink [number]
 ```
 
-**Search Optimization**:
-
-- Knowledge entries include searchable tags
-- Problem statements use clear, technical language
-- Solutions include specific keywords and technologies
-- Cross-references link related knowledge
-- Hub ensures all knowledge is discoverable from central location
-
-### Knowledge Structure
-
-**Each Knowledge Entry Contains**:
-
-- **Problem Statement**: Clear description of what was solved
-- **Solution Implementation**: Step-by-step working solution
-- **AI Honest Feedback**: What worked, what didn't, lessons learned
-- **Things to Avoid**: Common pitfalls and their consequences
-- **Prerequisites**: What to check before starting
-- **AI Self-Improvement**: Insights for future problem-solving
-- **Links & References**: Connections to source issues/PRs/code
-- **Verification Status**: Testing and validation state
+**Knowledge Entry Structure**:
+- **Problem** → **Solution** → **Lessons** → **Avoid** → **References**
 
 ---
 
+## 🧪 Test-Driven Development (TDD) System
+
+### 🔴🟢🔵 Red-Green-Refactor Cycle (MANDATORY)
+
+The Red-Green-Refactor cycle is the core of Test-Driven Development workflow:
+
+#### 🔴 Red Phase (Tests First)
+- **Write failing tests** for the functionality you want to implement
+- Tests document the expected behavior before code exists
+- Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+
+#### 🟢 Green Phase (Minimal Implementation)
+- **Write minimal code** to make the failing tests pass
+- Don't implement extra features yet
+- Focus only on passing the tests you wrote
+- Run tests: `[test command]` → tests PASS
+
+#### 🔵 Refactor Phase (Improve Code)
+- **Refactor the code** for clarity, performance, and maintainability
+- Keep tests passing while improving code quality
+- Run tests: `[test command]` → tests still PASS
+- Run linter: `[lint command]` → zero warnings/errors
+- Run formatter: `[format command]` → consistent style
+
+### TDD Workflow Examples
+
+```bash
+# Node.js: npm test → fail → implement → pass → build → lint
+# Python: pytest → fail → implement → pass → build → lint
+# Rust: cargo test → fail → implement → pass → build → clippy
+# Go: go test → fail → implement → pass → build → lint
+```
+
+### TDD Integration
+
+**Mandatory Requirements**:
+- ✅ Tests BEFORE code (Red Phase)
+- ✅ Tests PASS after implementation (Green Phase)
+- ✅ Refactor while tests pass (Refactor Phase)
+- ✅ Red-Green-Refactor cycle for ALL implementations
+
+**Benefits**: Higher quality ✅ • Better design ✅ • Regression prevention ✅ • Living docs ✅
+
+---
 
 ## 🏗️ Technical Architecture
 
 ### Core Stack
-
-- **Language**: [PRIMARY_LANGUAGE] (e.g., Rust, TypeScript, Python)
-- **Web Framework**: [WEB_FRAMEWORK] (project-dependent)
-- **Database**: [DATABASE] (e.g., PostgreSQL, MySQL, SQLite)
-- **Cache/Queue**: [CACHE_QUEUE] (e.g., Redis)
-- **Authentication**: [AUTH_METHOD] (e.g., OAuth/JWT)
-- **AI Engine**: [AI_ENGINE] (optional)
-- **Payments**: [PAYMENT_PROVIDER] (optional)
-- **Deployment**: [DEPLOYMENT_PLATFORM]
-- **Frontend**: [FRONTEND_TECH] (optional)
+**Language**: [PRIMARY_LANGUAGE] • **Framework**: [WEB_FRAMEWORK] • **Database**: [DATABASE] • **Auth**: [AUTH_METHOD] • **Deploy**: [DEPLOYMENT_PLATFORM]
 
 ### Project Structure
 
@@ -478,7 +480,7 @@ All workflow commands are now available as proper Claude Code slash commands (ma
 │   ├── handlers/               # Request handlers / API endpoints
 │   ├── services/               # Business logic and integrations
 │   ├── models/                 # Data structures and types
-│   └── db/                     # Database helpers and migrations
+   └── db/                     # Database helpers and migrations
 ├── migrations/                 # Database migrations (if applicable)
 └── .env.example                # Environment variables template
 ```
@@ -491,6 +493,28 @@ users (id, external_id, name, email, avatar, created_at)
 events (id, user_id, type, payload, created_at)
 payments (id, user_id, provider_id, amount, status, created_at)
 ```
+
+### Git Branch Strategy (Staging-First Workflow)
+
+```
+main              ←─ DEVELOPER (manual merge)
+  │                └─ Production-ready code
+staging ←───────   ←─ FEATURE BRANCHES (auto PR)
+  │                └─ Integration testing
+feature/task-XXX   ←─ Development work
+```
+
+**Developer Responsibilities:**
+- Review and merge `staging → main` when ready
+- Ensure all tests pass before merging to main
+- Handle conflicts and resolve issues
+- Maintain code quality standards
+
+**Automated Workflow:**
+- Feature branches always PR to `staging`
+- Automated tests run on staging PR
+- CI/CD validates all requirements
+- Never auto-merge to main
 
 ### Key Features
 

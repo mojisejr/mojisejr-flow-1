@@ -26,17 +26,24 @@ When creating a task issue:
    - Verify `docs/TASK-ISSUE-TEMP.md` template exists
    - Get current execution mode from `/mode`
 
-2. **Create Task Issue**:
-   - Title: `[TASK] {task description}`
-   - Labels: `task`, `{mode}-assignment` (manual/copilot)
-   - Body: Use `docs/TASK-ISSUE-TEMP.md` template
+2. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+
+3. **Create temporary content**:
+   - Generate issue body in `.tmp/task-content.md`
    - Replace placeholders: `{{TASK_DESCRIPTION}}`, `{{EXECUTION_MODE}}`, `{{DATE}}`, `{{ASSIGNEE}}`
 
-3. **Mode-Based Assignment**:
+4. **Create Task Issue**:
+   - Title: `[TASK] {task description}`
+   - Labels: `task`, `{mode}-assignment` (manual/copilot)
+   - Body: Use `--body-file .tmp/task-content.md`
+
+5. **Cleanup temporary files**: `rm .tmp/task-content.md`
+
+6. **Mode-Based Assignment**:
    - **MANUAL**: Tasks assigned to human developer
    - **COPILOT**: Tasks assigned to @copilot
 
-4. **Display Results**:
+7. **Display Results**:
    - Show issue URL and number
    - Provide mode-specific next steps
    - List implementation requirements

@@ -63,22 +63,29 @@ When creating a task issue:
    - Verify `docs/TASK-ISSUE-TEMP.md` template exists
    - Get current execution mode from `/mode`
 
-6. **Create Task Issue**:
+6. **Setup .tmp folder**: `mkdir -p .tmp && echo ".tmp/" >> .gitignore`
+
+7. **Create temporary content**:
+   - Generate issue body in `.tmp/task-content.md`
+   - Replace placeholders: `{{TASK_DESCRIPTION}}`, `{{EXECUTION_MODE}}`, `{{DATE}}`, `{{ASSIGNEE}}`
+   - Include validated context and verified dependencies
+
+8. **Create Task Issue**:
    - Title: `[TASK] {task description}`
    - Labels: `task`, `{mode}-assignment` (manual/copilot)
-   - Body: Use `docs/TASK-ISSUE-TEMP.md` template
-   - Replace placeholders: `{{TASK_DESCRIPTION}}`, `{{EXECUTION_MODE}}`, `{{DATE}}`, `{{ASSIGNEE}}`
-   - **Enhanced**: Include validated context and verified dependencies
+   - Body: Use `--body-file .tmp/task-content.md`
 
-7. **Mode-Based Assignment**:
-   - **MANUAL**: Tasks assigned to human developer
-   - **COPILOT**: Tasks assigned to @copilot
+9. **Cleanup temporary files**: `rm .tmp/task-content.md`
 
-8. **Display Results**:
-   - Show issue URL and number
-   - Provide mode-specific next steps
-   - List implementation requirements
-   - **Enhanced**: Show validation context and verified dependencies
+10. **Mode-Based Assignment**:
+    - **MANUAL**: Tasks assigned to human developer
+    - **COPILOT**: Tasks assigned to @copilot
+
+11. **Display Results**:
+    - Show issue URL and number
+    - Provide mode-specific next steps
+    - List implementation requirements
+    - **Enhanced**: Show validation context and verified dependencies
 
 ## Template Integration
 
@@ -177,10 +184,11 @@ All tasks require 100% validation (Rust/Cargo project):
 
 ## Workflow Integration
 
-1. **Context Phase**: Use `/fcs [topic]` to create context discussion
-2. **Planning Phase**: Use `/plan [task]` when context is ready
-3. **Implementation Phase**: Use `/impl [issue-number]` to execute
-4. **Review Phase**: Use `/pr [feedback]` to create pull request
+1. **Initialization Phase**: Use `/init` to set up project workflow (MANDATORY first step)
+2. **Context Phase**: Use `/fcs [topic]` to create context discussion
+3. **Planning Phase**: Use `/plan [task]` when context is ready
+4. **Implementation Phase**: Use `/impl [issue-number]` to execute
+5. **Review Phase**: Use `/pr [feedback]` to create pull request
 
 ## Files
 
@@ -205,3 +213,15 @@ All tasks require 100% validation (Rust/Cargo project):
 - **Pattern compliance**: Tasks follow existing codebase architecture and patterns
 - **Scope realism**: MVP-appropriate requirements based on project maturity
 - **Test-First Approach**: All tasks require explicit test-first specifications
+
+### Alternative: Rapid Planning
+
+For simple tasks, consider using `/plan2` instead:
+- **Faster creation**: Quick complexity validation (5-10 seconds)
+- **Same template**: Uses identical `docs/TASK-ISSUE-TEMP.md` template
+- **Simplified workflow**: Basic validation, essential testing only
+- **Auto-protection**: Stops complex tasks with clear warnings
+- **Force option**: `--force` available when absolutely necessary
+
+Use `/plan2` for bug fixes, small UI changes, and simple improvements.
+Use `/plan` for complex features requiring detailed analysis.
