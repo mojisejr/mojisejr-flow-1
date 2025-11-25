@@ -43,6 +43,18 @@
 - [EXACT single outcome this task must achieve]
 - No additional features or modifications allowed
 
+### 🧪 TEST-FIRST REQUIREMENTS (MANDATORY)
+**Tests to write BEFORE code implementation:**
+- [ ] Unit test: [test name] - [what should pass]
+- [ ] Integration test: [test name] - [API/service behavior]
+- [ ] Edge case test: [test name] - [boundary condition]
+
+**Test Acceptance Criteria:**
+- [ ] Tests must fail initially (Red phase - before implementation)
+- [ ] Tests document expected behavior
+- [ ] All tests pass after implementation (Green phase)
+- [ ] Code is refactored while tests remain passing (Refactor phase)
+
 ### 📦 DELIVERABLE (MANDATORY)
 **This task creates ONE complete deliverable:**
 - **File(s) Created**: [exact file paths that will be created]
@@ -101,13 +113,16 @@ ALTER POLICY ...;
 - [ ] Lint command passes with zero violations (`[lint command]`)
 - [ ] Language/typecheck passes (e.g., TypeScript/other) (`[typecheck command]`)
 - [ ] All tests pass (`[test command]`) with zero failures
+- [ ] Test-first implemented (tests written before code)
+- [ ] Test coverage complete for all new code paths
+- [ ] Red-Green-Refactor cycle followed (Red → Green → Refactor)
 - [ ] Single deliverable works end-to-end
 - [ ] No unintended side effects
 - [ ] Code follows project patterns and style guidelines
 
 ### 🔄 GIT WORKFLOW (MANDATORY)
 - **Branch Name**: `feature/task-[XXX]-[X]-[description]`
-- **Source Branch**: MUST branch from latest `[source branch]` (e.g., `staging` or `main`, per project)
+- **Source Branch**: MUST branch from latest `staging` (per project convention)
 - **No Merge Conflicts**: Branch must be clean and mergeable
 - **Commit Format**:
   ```
@@ -124,39 +139,66 @@ ALTER POLICY ...;
   ```
 
 ### 🚨 VALIDATION CHECKLIST (MANDATORY BEFORE COMMIT)
-- [ ] `npm run build` → Must show "✓ Compiled successfully"
-- [ ] `npm run lint` → Must show "✓ Lint complete"
-- [ ] `npm test` → Must show "✓ All tests passed"
+- [ ] **TDD RED PHASE**: Tests written FIRST and failing (before implementation)
+- [ ] **TDD GREEN PHASE**: Implementation makes all tests pass
+- [ ] **TDD REFACTOR PHASE**: Code improved while tests remain passing
+- [ ] `[build command]` → Must show success with zero errors/warnings
+- [ ] `[lint command]` → Must show success with zero violations
+- [ ] `[format command]` → Must show success (no changes needed)
+- [ ] `[test command]` → Must show "✓ All tests passed"
 - [ ] Manual test in LINE WebView (if applicable)
 - [ ] No console errors in browser
-- [ ] TypeScript compilation successful
+- [ ] Language/typecheck compilation successful
 
 ### 📖 IMPLEMENTATION INSTRUCTIONS
 **Follow exactly these steps:**
 
 1. **Create Feature Branch** (MANDATORY FIRST STEP):
   ```bash
-  git checkout [source branch]
-  git pull origin [source branch]
+  git checkout staging
+  git pull origin staging
   git checkout -b feature/task-[XXX]-[X]-[description]
   ```
 
-2. **Implementation**: Build the single deliverable exactly as specified
-
-3. **Validation** (MANDATORY BEFORE COMMIT):
-  ```bash
-  [build command]    # Must pass
-  [lint command]     # Must pass
-  [test command]     # Must pass
-  ```
-
-4. **Commit Changes**:
+2. **TDD RED PHASE** (MANDATORY FIRST):
    ```bash
-   git add .
-   git commit -m "feat: [single deliverable]..."
+   # Write comprehensive tests BEFORE implementing code
+   [test command]     # Must FAIL (Red phase - no implementation yet)
    ```
 
-5. **Push Branch**:
+3. **TDD GREEN PHASE** (Minimal Implementation):
+   ```bash
+   # Write minimal code to make failing tests pass
+   [test command]     # Must PASS (Green phase)
+   [build command]    # Must pass
+   ```
+
+4. **TDD REFACTOR PHASE** (Code Quality):
+   ```bash
+   # Refactor code while keeping tests passing
+   [lint command]     # Must pass
+   [format command]   # Must pass
+   [test command]     # Must still PASS
+   ```
+
+5. **Commit Changes**:
+   ```bash
+   git add .
+   git commit -m "feat: [single deliverable]
+
+   - Address TASK-XXX-X: [task title]
+   - Test-first implemented: Tests written before code implementation
+   - Red-Green-Refactor cycle followed (Red → Green → Refactor)
+   - Build validation: 100% PASS ([build command])
+   - Linter validation: 100% PASS ([lint command])
+   - Format validation: 100% PASS ([format command])
+   - Tests: 100% PASS ([test command])
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   ```
+
+6. **Push Branch**:
    ```bash
    git push -u origin feature/task-[XXX]-[X]-[description]
    ```

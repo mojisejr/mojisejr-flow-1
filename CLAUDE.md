@@ -23,13 +23,13 @@
 
 ### 📋 MANDATORY WORKFLOW RULES
 
-- ✅ **ALWAYS** sync main branch before any implementation: `git checkout main && git pull origin main`
+- ✅ **ALWAYS** sync staging branch before any implementation: `git checkout staging && git pull origin staging`
 - ✅ **ALWAYS** verify task issue exists: `#[issue-number]` before `=impl`
 - ✅ **ALWAYS** use feature branch naming: `feature/task-[issue-number]-[description]`
-- ✅ **ALWAYS** ensure 100% build success before commit: `cargo build --release`
-- ✅ **ALWAYS** ensure 100% clippy pass before commit: `cargo clippy --all-targets --all-features`
+- ✅ **ALWAYS** ensure 100% build success before commit: `[build command]`
+- ✅ **ALWAYS** ensure 100% lint pass before commit: `[lint command]`
 - ✅ **ALWAYS** use template-guided workflow with proper context validation
-- ✅ **ALWAYS** verify code formatting: `cargo fmt -- --check`
+- ✅ **ALWAYS** verify code formatting: `[format command]`
 
 ---
 
@@ -220,28 +220,61 @@ All slash commands follow this structure:
 **Implementation Steps**:
 
 1. **Create Feature Branch**: `git checkout -b feature/task-[issue-number]-[description]`
-2. **Execute Implementation**: Follow task requirements, use TodoWrite for complex tasks
-3. **Build Validation**: `cargo build --release` (100% success - zero warnings)
-4. **Lint Validation**: `cargo clippy --all-targets --all-features` (100% pass)
-5. **Format Check**: `cargo fmt -- --check` (consistent formatting)
-6. **Type Check**: `cargo check` (comprehensive type checking)
-7. **Run Tests**: `cargo test` (if applicable)
-8. **Commit Changes**:
+   - Always branch from **staging** (already synced in pre-checklist)
+
+2. **Step 0: Write Tests First (Red Phase)** ⚠️ MANDATORY:
+   ```bash
+   # Create test files BEFORE implementing code
+   # Tests should fail initially (Red phase)
+   [test command]  # e.g., npm test, cargo test, pytest
+   # Expected: Tests fail (no implementation yet)
+   ```
+   - Write comprehensive unit tests for the new functionality
+   - Write integration tests for API endpoints or service integrations
+   - Tests document the expected behavior before code exists
+   - This ensures Test-Driven Development (TDD) workflow
+
+3. **TDD Green Phase (Minimal Implementation)**:
+   ```bash
+   # Write minimal code to make failing tests pass
+   [test command]      # Must PASS (Green phase)
+   [build command]     # Must pass
+   ```
+
+4. **TDD Refactor Phase (Code Quality)**:
+   ```bash
+   # Refactor code while keeping tests passing
+   [lint command]      # Must pass
+   [format command]    # Must pass
+   [test command]      # Must still PASS
+   ```
+
+5. **Final Validation**:
+   - **Build validation**: `[build command]` (100% success - zero errors/warnings)
+   - **Lint validation**: `[lint command]` (100% pass - zero violations)
+   - **Format validation**: `[format command]` (consistent formatting)
+   - **Type check validation**: `[typecheck command]` (comprehensive type checking)
+   - **Test validation**: `[test command]` (100% pass - zero failures)
+
+6. **Commit Changes**:
 
    ```bash
    git add .
    git commit -m "feat: [feature description]
 
    - Address #[issue-number]: [task title]
-   - Build validation: 100% PASS (cargo build --release)
-   - Clippy validation: 100% PASS (cargo clippy)
-   - Format validation: 100% PASS (cargo fmt)
+   - Test-first implemented: Tests written before code implementation
+   - Red-Green-Refactor cycle followed (Red → Green → Refactor)
+   - Build validation: 100% PASS ([build command])
+   - Lint validation: 100% PASS ([lint command])
+   - Format validation: 100% PASS ([format command])
+   - Type validation: 100% PASS ([typecheck command])
 
    🤖 Generated with Claude Code
    Co-Authored-By: Claude <noreply@anthropic.com>"
    ```
 
-9. **Push Branch**: `git push -u origin feature/task-[issue-number]-[description]`
+7. **Push Branch**: `git push -u origin feature/task-[issue-number]-[description]`
 
 **Post-Implementation**:
 
@@ -428,6 +461,94 @@ All slash commands follow this structure:
 
 ---
 
+## 🧪 Test-Driven Development (TDD) System
+
+### 🔴🟢🔵 Red-Green-Refactor Cycle (MANDATORY)
+
+The Red-Green-Refactor cycle is the core of Test-Driven Development workflow:
+
+#### 🔴 Red Phase (Tests First)
+- **Write failing tests** for the functionality you want to implement
+- Tests document the expected behavior before code exists
+- Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+
+#### 🟢 Green Phase (Minimal Implementation)
+- **Write minimal code** to make the failing tests pass
+- Don't implement extra features yet
+- Focus only on passing the tests you wrote
+- Run tests: `[test command]` → tests PASS
+
+#### 🔵 Refactor Phase (Improve Code)
+- **Refactor the code** for clarity, performance, and maintainability
+- Keep tests passing while improving code quality
+- Run tests: `[test command]` → tests still PASS
+- Run linter: `[lint command]` → zero warnings/errors
+- Run formatter: `[format command]` → consistent style
+
+### TDD Workflow Examples (Language-Specific)
+
+```bash
+# JavaScript/TypeScript (Node.js)
+npm test                              # → FAILS (no implementation)
+# Write minimal implementation
+npm test                              # → PASSES
+npm run build                         # → Success
+npm run lint                          # → Zero warnings
+npx prettier --check .                # → Formatted
+npm test                              # → Still PASSES
+
+# Python
+pytest                               # → FAILS (no implementation)
+# Write minimal implementation
+pytest                               # → PASSES
+python -m build                      # → Success
+ruff check                           # → Zero warnings
+black --check .                      # → Formatted
+pytest                               # → Still PASSES
+
+# Rust
+cargo test                            # → FAILS (no implementation)
+# Write minimal implementation
+cargo test                            # → PASSES
+cargo build --release                 # → Success
+cargo clippy                          # → Zero warnings
+cargo fmt                             # → Formatted
+cargo test                            # → Still PASSES
+
+# Go
+go test ./...                         # → FAILS (no implementation)
+# Write minimal implementation
+go test ./...                         # → PASSES
+go build ./...                        # → Success
+golangci-lint run                     # → Zero warnings
+gofmt -d .                           # → Formatted
+go test ./...                         # → Still PASSES
+```
+
+### TDD Integration with Workflow
+
+**Mandatory TDD Requirements**:
+- ✅ Tests must be written BEFORE code implementation (Red Phase)
+- ✅ Test coverage must be comprehensive for new/modified code
+- ✅ Tests must PASS (Green Phase complete)
+- ✅ Code must be refactored while tests remain passing (Refactor Phase)
+- ✅ Red-Green-Refactor cycle must be followed for all implementations
+
+**TDD Validation in Templates**:
+- Task template includes `🧪 TEST-FIRST REQUIREMENTS (MANDATORY)` section
+- Implementation instructions enforce TDD workflow
+- Commit messages include TDD validation confirmation
+- All validation steps verify TDD compliance
+
+**Benefits of TDD Integration**:
+- **Higher Code Quality**: Tests ensure requirements are met
+- **Better Design**: Writing tests first forces better API design
+- **Regression Prevention**: Comprehensive test coverage prevents regressions
+- **Documentation**: Tests serve as living documentation of expected behavior
+- **Confidence**: Enables safe refactoring and maintenance
+
+---
+
 ## 🏗️ Technical Architecture
 
 
@@ -468,6 +589,28 @@ users (id, external_id, name, email, avatar, created_at)
 events (id, user_id, type, payload, created_at)
 payments (id, user_id, provider_id, amount, status, created_at)
 ```
+
+### Git Branch Strategy (Staging-First Workflow)
+
+```
+main              ←─ DEVELOPER (manual merge)
+  │                └─ Production-ready code
+staging ←───────   ←─ FEATURE BRANCHES (auto PR)
+  │                └─ Integration testing
+feature/task-XXX   ←─ Development work
+```
+
+**Developer Responsibilities:**
+- Review and merge `staging → main` when ready
+- Ensure all tests pass before merging to main
+- Handle conflicts and resolve issues
+- Maintain code quality standards
+
+**Automated Workflow:**
+- Feature branches always PR to `staging`
+- Automated tests run on staging PR
+- CI/CD validates all requirements
+- Never auto-merge to main
 
 ### Key Features
 

@@ -48,11 +48,24 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
    - Extract description from issue title
    - Use naming convention: `feature/task-{issue}-{description}`
 
-3. **Mode-Specific Execution**:
+3. **Step 0: Write Tests First (Red Phase)** ⚠️ MANDATORY:
+   ```bash
+   # Create test files BEFORE implementing code
+   # Tests should fail initially (Red phase)
+   [test command]
+   # Expected: Tests fail (no implementation yet)
+   ```
+   - Write comprehensive unit tests for the new functionality
+   - Write integration tests for API endpoints or service integrations
+   - Tests document the expected behavior before code exists
+   - This ensures Test-Driven Development (TDD) workflow
+
+4. **Mode-Specific Execution**:
 
    **MANUAL Mode**:
    - Provide detailed implementation guidance
    - Show step-by-step workflow instructions
+   - Include TDD requirements
    - Include validation requirements
    - Display commit message format
    - Provide next steps for human developer
@@ -60,26 +73,80 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
    **COPILOT Mode**:
    - Trigger automatic implementation
    - Handle all validation steps
+   - Enforce TDD workflow
    - Create commit with proper format
    - Push branch and create PR
 
-4. **Validation Requirements** (100% required):
+## Validation Requirements (100% required):
    ```bash
-   cargo build --release           # Build validation
-   cargo clippy --all-targets --all-features  # Lint validation
-   cargo fmt -- --check           # Format validation
-   cargo check                    # Type check validation
-   cargo test                     # Test validation (if applicable)
+   ✅ Test must be written BEFORE code implementation (Red Phase)
+   ✅ Test coverage must be comprehensive for new/modified code
+   ✅ Tests must PASS (Green Phase complete)
+   [build command]     # Build validation (e.g., npm run build, cargo build --release)
+   [lint command]      # Lint validation (e.g., npm run lint, cargo clippy -- -D warnings)
+   [typecheck command] # Type check validation (e.g., tsc --noEmit, cargo check)
+   [format command]    # Format validation (e.g., prettier --check, cargo fmt -- --check)
+   [test command]      # Test validation (MANDATORY)
    ```
+
+## 🔴🟢🔵 Red-Green-Refactor Cycle (TDD)
+
+The Red-Green-Refactor cycle is the core of Test-Driven Development:
+
+### 🔴 Red Phase (Tests First)
+- **Write failing tests** for the functionality you want to implement
+- Tests document the expected behavior
+- Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+
+### 🟢 Green Phase (Minimal Implementation)
+- **Write minimal code** to make the failing tests pass
+- Don't implement extra features yet
+- Focus only on passing the tests you wrote
+- Run tests: `[test command]` → tests PASS
+
+### 🔵 Refactor Phase (Improve Code)
+- **Refactor the code** for clarity, performance, and maintainability
+- Keep tests passing while improving code quality
+- Run tests: `[test command]` → tests still PASS
+- Run linter: `[lint command]` → zero warnings/errors
+- Run formatter: `[format command]` → consistent style
+
+### Complete TDD Workflow Example
+```bash
+# Step 1: RED - Create failing tests
+# Write test file following project conventions
+[test command]                              # → FAILS (no implementation)
+
+# Step 2: GREEN - Implement minimal code
+# Write code to make tests pass
+[test command]                              # → PASSES
+[build command]                             # → Success
+
+# Step 3: REFACTOR - Improve code quality
+# Improve implementation while keeping tests passing
+[lint command]                              # → Zero warnings
+[format command]                            # → Formatted
+[test command]                              # → Still PASSES
+
+# Final validation
+[build command]                             # ✅ 100% SUCCESS
+[lint command]                              # ✅ 100% SUCCESS
+[test command]                              # ✅ 100% SUCCESS
+```
+
+## Commit Format
 
 5. **Commit Format**:
    ```bash
    git commit -m "feat: [feature description]
 
    - Address #[issue-number]: [task title]
-   - Build validation: 100% PASS (cargo build --release)
-   - Clippy validation: 100% PASS (cargo clippy)
-   - Format validation: 100% PASS (cargo fmt)
+   - Test-first implemented: Tests written before code implementation
+   - Red-Green-Refactor cycle followed (Red → Green → Refactor)
+   - Build validation: 100% PASS ([build command])
+   - Lint validation: 100% PASS ([lint command])
+   - Type validation: 100% PASS ([typecheck command])
+   - Format validation: 100% PASS ([format command])
 
    🤖 Generated with Claude Code
    Co-Authored-By: Claude <noreply@anthropic.com>"
@@ -92,11 +159,13 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 **Output Includes**:
 - Task information (issue, title, branch)
 - Implementation steps checklist
+- TDD requirements (Red-Green-Refactor)
 - Validation requirements
 - Commit message template
 - Next steps for human developer
 
 **Human Developer Responsibilities**:
+- Write tests FIRST (Red phase)
 - Execute implementation according to task requirements
 - Run all validations before committing
 - Use proper commit format
@@ -105,7 +174,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 ### COPILOT Mode
 
 **Automatic Execution**:
-- Complete implementation workflow
+- Complete TDD workflow (tests first!)
 - All validation steps
 - Proper commit formatting
 - Branch creation and push
@@ -116,6 +185,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 - **Issue not found**: Clear error with issue number
 - **Invalid environment**: Git status and directory checks
 - **Validation failures**: Stop workflow and report errors
+- **TDD violations**: Error if tests not written first
 - **Mode-specific**: Provide appropriate guidance per mode
 
 ## Integration
@@ -133,8 +203,10 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 ## Notes
 
-- Always works from staging branch as base
+- Always works from **staging** branch as base (never from main)
 - Feature branch naming is strictly enforced
 - 100% validation is mandatory before commits
+- **Test-Driven Development is MANDATORY** - Tests must be written before code
 - Mode affects who performs implementation steps
-- Never merge PRs yourself - wait for team approval
+- **PR always goes to staging** - developer handles staging → main merge
+- Commands adapt to project type (Node.js, Rust, Python, etc.)

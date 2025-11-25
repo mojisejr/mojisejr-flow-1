@@ -65,7 +65,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
    ```bash
    # Create test files BEFORE implementing code
    # Tests should fail initially (Red phase)
-   cargo test
+   [test command]  # e.g., npm test, cargo test, pytest
    # Expected: Tests fail (no implementation yet)
    ```
    - Write comprehensive unit tests for the new functionality
@@ -93,10 +93,11 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
    ✅ Test must be written BEFORE code implementation (Red Phase)
    ✅ Test coverage must be comprehensive for new/modified code
    ✅ Tests must PASS (Green Phase complete)
-   cargo build --release          # Build validation
-   cargo clippy -- -D warnings    # Lint validation (deny warnings)
-   cargo fmt -- --check           # Format validation (no changes)
-   cargo test                     # Test validation (MANDATORY)
+   [build command]     # Build validation (e.g., npm run build, cargo build --release)
+   [lint command]      # Lint validation (e.g., npm run lint, cargo clippy -- -D warnings)
+   [format command]    # Format validation (e.g., prettier --check, cargo fmt -- --check)
+   [typecheck command] # Type check validation (e.g., tsc --noEmit, cargo check)
+   [test command]      # Test validation (MANDATORY)
    ```
 
 6. **Commit Format**:
@@ -106,9 +107,10 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
    - Address #[issue-number]: [task title]
    - Test-first implemented: Tests written before code implementation
    - Red-Green-Refactor cycle followed (Red → Green → Refactor)
-   - Build validation: 100% PASS (cargo build --release)
-   - Lint validation: 100% PASS (cargo clippy -- -D warnings)
-   - Format validation: 100% PASS (cargo fmt -- --check)
+   - Build validation: 100% PASS ([build command])
+   - Lint validation: 100% PASS ([lint command])
+   - Format validation: 100% PASS ([format command])
+   - Type validation: 100% PASS ([typecheck command])
 
    🤖 Generated with Claude Code
    Co-Authored-By: Claude <noreply@anthropic.com>"
@@ -121,77 +123,54 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 ### 🔴 Red Phase (Tests First)
 - **Write failing tests** for the functionality you want to implement
 - Tests document the expected behavior
-- Run tests: `cargo test` → tests FAIL (because code doesn't exist yet)
-- Example:
-  ```rust
-  // tests/question_filter_tests.rs
-  #[test]
-  fn test_empty_question_rejected() {
-    let result = filter_question("");
-    assert!(result.is_err());
-  }
-  
-  #[test]
-  fn test_valid_question_accepted() {
-    let result = filter_question("What is my future?");
-    assert!(result.is_ok());
-  }
-  ```
+- Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+- Examples (adapt to your language):
+  - **JavaScript/TypeScript**: Write test file using Jest/Vitest
+  - **Python**: Write test file using pytest
+  - **Rust**: Write test file in tests/ directory
+  - **Go**: Write test file using testing package
 
 ### 🟢 Green Phase (Minimal Implementation)
 - **Write minimal code** to make the failing tests pass
 - Don't implement extra features yet
 - Focus only on passing the tests you wrote
-- Run tests: `cargo test` → tests PASS
-- Example:
-  ```rust
-  // src/agents/question_filter.rs
-  pub fn filter_question(q: &str) -> Result<String, FilterError> {
-    if q.is_empty() {
-      return Err(FilterError::EmptyQuestion);
-    }
-    Ok(q.to_string())
-  }
-  ```
+- Run tests: `[test command]` → tests PASS
 
 ### 🔵 Refactor Phase (Improve Code)
 - **Refactor the code** for clarity, performance, and maintainability
 - Keep tests passing while improving code quality
-- Run tests: `cargo test` → tests still PASS
-- Run linter: `cargo clippy -- -D warnings` → zero warnings
-- Run formatter: `cargo fmt` → consistent style
-- Example improvements:
-  ```rust
-  pub fn filter_question(q: &str) -> Result<String, FilterError> {
-    q.trim()
-      .is_empty()
-      .then(|| Err(FilterError::EmptyQuestion))
-      .unwrap_or_else(|| Ok(q.trim().to_string()))
-  }
-  ```
+- Run tests: `[test command]` → tests still PASS
+- Run linter: `[lint command]` → zero warnings/errors
+- Run formatter: `[format command]` → consistent style
 
 ### Complete TDD Workflow Example
 ```bash
 # Step 1: RED - Create failing tests
-# Write test file: tests/question_filter_tests.rs
-cargo test                                  # → FAILS (no implementation)
+# Write comprehensive test file for new functionality
+[test command]                              # → FAILS (no implementation)
 
 # Step 2: GREEN - Implement minimal code
-# Write code: src/agents/question_filter.rs
-cargo test                                  # → PASSES
-cargo build --release                       # → Success
+# Write minimal code to make tests pass
+[test command]                              # → PASSES
+[build command]                             # → Success
 
 # Step 3: REFACTOR - Improve code quality
 # Improve implementation while keeping tests passing
-cargo clippy -- -D warnings                 # → Zero warnings
-cargo fmt                                   # → Formatted
-cargo test                                  # → Still PASSES
+[lint command]                              # → Zero warnings
+[format command]                            # → Formatted
+[test command]                              # → Still PASSES
 
 # Final validation
-cargo build --release                       # ✅ 100% SUCCESS
-cargo clippy -- -D warnings                 # ✅ 100% SUCCESS
-cargo test                                  # ✅ 100% SUCCESS
+[build command]                             # ✅ 100% SUCCESS
+[lint command]                              # ✅ 100% SUCCESS
+[test command]                              # ✅ 100% SUCCESS
 ```
+
+**Language-Specific Examples**:
+- **Node.js**: `npm test`, `npm run build`, `npm run lint`, `prettier --check`
+- **Python**: `pytest`, `python -m build`, `ruff check`, `black --check`
+- **Rust**: `cargo test`, `cargo build --release`, `cargo clippy`, `cargo fmt`
+- **Go**: `go test ./...`, `go build ./...`, `golangci-lint run`, `gofmt -d`
 
 ## Mode-Specific Behavior
 
