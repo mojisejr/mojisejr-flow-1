@@ -38,24 +38,32 @@ Pull Request Creation - Create Pull Request from feature branch to staging.
    - Validate issue exists and is a task
    - Get issue title and description to `.tmp/issue-info.md`
 
-5. **Create PR Body Template**:
+5. **Check for PR Template**:
+   - Check if `docs/PR-TEMP.md` exists
+   - If exists: Use template structure for PR body
+   - If not: Use default PR body format
+
+6. **Create PR Body Template**:
    - Generate PR body content in `.tmp/pr-body.md`
    - Include all validation results and issue information
+   - If template exists: Fill template sections appropriately
 
-6. **Create Pull Request**:
+7. **Create Pull Request**:
    - Use `--body-file .tmp/pr-body.md` for PR creation
 
-7. **Cleanup temporary files**: `rm .tmp/issue-info.md .tmp/pr-body.md`
+8. **Cleanup temporary files**: `rm .tmp/issue-info.md .tmp/pr-body.md`
 
 ### Pre-PR Validations (100% Required)
 
 ```bash
-cargo build --release           # Build validation
-cargo clippy --all-targets --all-features  # Lint validation
-cargo fmt -- --check           # Format validation
-cargo check                    # Type check validation
-cargo test                     # Test validation (if applicable)
+[build command]                 # Build validation (from project config)
+[lint command]                  # Lint validation (from project config)
+[format command] --check        # Format validation (from project config)
+[typecheck command]             # Type check validation (from project config)
+[test command]                  # Test validation (from project config)
 ```
+
+Note: Commands are automatically detected from project configuration during `/init`
 
 ### PR Creation
 
@@ -81,7 +89,24 @@ cargo test                     # Test validation (if applicable)
      --label "auto-pr"
    ```
 
-## PR Body Template
+## PR Body Templates
+
+### Template-Based PR Body (Preferred)
+
+If `docs/PR-TEMP.md` exists, the command will:
+
+1. **Read Template**: Load PR template structure
+2. **Fill Sections**: Auto-populate template sections with:
+   - Issue information from GitHub API
+   - Validation results from pre-PR checks
+   - Branch and commit information
+   - User feedback (if provided)
+3. **Generate Body**: Create PR body following template format
+4. **Highlight Focus Areas**: Emphasize TDD compliance and agent context
+
+### Default PR Body (Fallback)
+
+If no template exists, use this format:
 
 ```markdown
 ## Summary
@@ -90,6 +115,12 @@ This PR implements: **{task description}**
 
 - Resolves #{issue-number}: {task title}
 - Created from feature branch: `{branch-name}`
+
+## TDD Implementation Details
+
+- **RED Phase**: Tests written first and validated to fail
+- **GREEN Phase**: Minimal implementation to satisfy tests
+- **REFACTOR Phase**: Code quality improvements while maintaining test coverage
 
 ## Changes
 
@@ -100,10 +131,16 @@ This PR implements: **{task description}**
 
 ## Validation
 
-- ✅ Build validation: 100% PASS (`cargo build --release`)
-- ✅ Clippy validation: 100% PASS (`cargo clippy`)
-- ✅ Format validation: 100% PASS (`cargo fmt`)
-- ✅ Type check validation: 100% PASS (`cargo check`)
+- ✅ Build validation: 100% PASS (`[build command]`)
+- ✅ Lint validation: 100% PASS (`[lint command]`)
+- ✅ Format validation: 100% PASS (`[format command]`)
+- ✅ Type check validation: 100% PASS (`[typecheck command]`)
+- ✅ Test validation: 100% PASS (`[test command]`)
+
+## Agent Learning Context
+
+- **Approach Decision**: Implementation chosen based on {reasoning}
+- **Knowledge Capture**: Consider creating `/kupdate` for new learnings
 
 ## Test Plan
 
@@ -112,13 +149,18 @@ This PR implements: **{task description}**
 - [ ] Integration with existing systems verified
 - [ ] Performance impact assessed (if applicable)
 
+## Workflow Integration
+
+- **Task Issue**: #{issue-number}
+- **Context Issues**: Links to relevant discussions (if applicable)
+
 ## Additional Notes
 
 {user feedback}
 
 ---
 
-🤖 Generated with Claude Code
+🤖 Generated with [PROJECT_NAME] Workflow Template
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 

@@ -33,16 +33,21 @@ A specialized GitHub agent that creates structured Pull Requests from feature br
    - Extract implementation requirements
 
 3. **Validation Requirements (100% Mandatory)**:
-   - Build validation: `cargo build --release`
-   - Lint validation: `cargo clippy -- -D warnings`
-   - Format validation: `cargo fmt -- --check`
-   - Type check validation: `cargo check`
-   - Test validation: `cargo test` (if applicable)
+   - Build validation: `[build command]`
+   - Lint validation: `[lint command]`
+   - Format validation: `[format command] --check`
+   - Type check validation: `[typecheck command]`
+   - Test validation: `[test command]` (if applicable)
+
+   Note: Commands are automatically detected from project configuration during `/init`
 
 ### PR Creation Process
-1. **Title Generation**: `feat: {clean task title} (resolve #{issue-number})`
-2. **Body Creation**: Structured PR body with comprehensive sections
-3. **GitHub Creation**: Creates PR to staging branch with proper labels
+1. **Template Detection**: Check if `docs/PR-TEMP.md` exists
+2. **Title Generation**: `feat: {clean task title} (resolve #{issue-number})`
+3. **Body Creation**:
+   - If template exists: Fill template sections with issue info and validation results
+   - If no template: Use default structured PR body format
+4. **GitHub Creation**: Creates PR to staging branch with proper labels
 
 ## Usage
 
@@ -68,11 +73,14 @@ Examples:
 ### Validation Process
 All validations must pass with 100% success rate before PR creation:
 ```bash
-cargo build --release     # Build validation
-cargo clippy -- -D warnings # Lint validation
-cargo check               # Type check validation
-cargo test                # Test validation (if available)
+[build command]           # Build validation (auto-detected)
+[lint command]            # Lint validation (auto-detected)
+[format command] --check  # Format validation (auto-detected)
+[typecheck command]       # Type check validation (auto-detected)
+[test command]            # Test validation (auto-detected)
 ```
+
+Note: Commands are automatically configured based on project technology stack during `/init`
 
 ### PR Title Format
 ```
@@ -80,52 +88,79 @@ feat: {clean task title} (resolve #{issue-number})
 ```
 
 ### PR Body Structure
+
+#### Template-Based (Preferred)
+If `docs/PR-TEMP.md` exists:
+- **TDD Compliance Validation**: Red-Green-Refactor phases
+- **Build & Test Validation**: Multi-language command placeholders
+- **Agent Learning Context**: Decision rationale and alternatives
+- **Workflow Integration**: Links to task/context issues
+- **Review Focus Areas**: TDD methodology, code quality, agent context
+
+#### Default Fallback
+If no template exists:
 - **Summary**: Task description and resolution
+- **TDD Implementation Details**: Red-Green-Refactor phases
 - **Changes**: Implementation checklist
-- **Validation**: All validation results
+- **Validation**: All validation results with placeholder commands
+- **Agent Learning Context**: Approach decision and knowledge capture
+- **Workflow Integration**: Links to task and context issues
 - **Test Plan**: Testing checklist
 - **Additional Notes**: User feedback (if provided)
 
-## PR Body Template
+## Multi-Language Support
 
-```markdown
-## Summary
+The agent automatically detects and uses project-specific commands:
 
-This PR implements: **{task description}**
-
-- Resolves #{issue-number}: {task title}
-- Created from feature branch: `{branch-name}`
-
-## Changes
-
-- [ ] Implementation completed according to task requirements
-- [ ] Code follows project standards and conventions
-- [ ] Tests added where applicable
-- [ ] Documentation updated if needed
-
-## Validation
-
-- ✅ Build validation: 100% PASS (`cargo build --release`)
-- ✅ Lint validation: 100% PASS (`cargo clippy -- -D warnings`)
-- ✅ Format validation: 100% PASS (`cargo fmt -- --check`)
-- ✅ Type check validation: 100% PASS (`cargo check`)
-
-## Test Plan
-
-- [ ] Manual testing completed
-- [ ] Automated tests pass
-- [ ] Integration with existing systems verified
-- [ ] Performance impact assessed (if applicable)
-
-## Additional Notes
-
-{user feedback}
-
----
-
-🤖 Generated with Claude Code
-Co-Authored-By: Claude <noreply@anthropic.com>
+### Node.js/TypeScript Projects
+```bash
+npm run build           # Build validation
+npm run lint            # Lint validation
+npm run format          # Format validation
+npm run type-check      # Type check validation
+npm test               # Test validation
 ```
+
+### Rust Projects
+```bash
+cargo build --release  # Build validation
+cargo clippy           # Lint validation
+cargo fmt              # Format validation
+cargo check            # Type check validation
+cargo test             # Test validation
+```
+
+### Python Projects
+```bash
+python -m build        # Build validation
+ruff check             # Lint validation
+black --check          # Format validation
+mypy                   # Type check validation
+pytest                # Test validation
+```
+
+## Template Integration Features
+
+### Smart Template Processing
+When `docs/PR-TEMP.md` exists, the agent:
+
+1. **Template Analysis**: Parses template structure and sections
+2. **Content Mapping**: Maps issue information to template sections
+3. **Validation Integration**: Fills validation results with actual commands
+4. **Context Preservation**: Includes agent learning context sections
+5. **Workflow Links**: Auto-populates links to related issues
+
+### Enhanced Agent Context
+The template includes specialized sections for:
+- **Approach Decision**: Why specific implementation was chosen
+- **Alternatives Considered**: What other approaches were evaluated
+- **Knowledge Capture**: Links to `/kupdate` knowledge entries
+- **Workflow Integration**: Connections to `/plan`, `/fcs`, and task issues
+
+### Collapsible Sections
+Optional sections are collapsed for better usability:
+- **Screenshots/Videos**: Before/after functionality
+- **Performance & Deployment**: Impact assessment and deployment notes
 
 ## Error Handling
 

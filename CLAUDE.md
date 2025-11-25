@@ -355,6 +355,26 @@ The `/init` command automatically handles project integration for both new and e
 - **MANUAL**: User uses `/pr` to create pull request
 - **COPILOT**: Agent creates PR automatically
 
+### Enhanced Pull Request Process
+
+**Template Integration**:
+- If `docs/PR-TEMP.md` exists: `/pr` automatically fills template with TDD compliance, validation results, and agent context
+- If no template: `/pr` uses default structured format with multi-language support
+
+**Agent Context Preservation**:
+- **Approach Decision**: Why specific implementation was chosen
+- **Alternatives Considered**: Other approaches evaluated and rejected
+- **Knowledge Capture**: Links to `/kupdate` entries for learnings
+- **Workflow Integration**: Connections to `/plan` tasks and `/fcs` discussions
+
+**Multi-Language Validation**:
+Commands automatically detected from project configuration:
+- `[build command]` → Build validation
+- `[lint command]` → Lint validation
+- `[format command]` → Format validation
+- `[typecheck command]` → Type checking
+- `[test command]` → Test validation
+
 ---
 
 ## 🧠 Knowledge Management System
