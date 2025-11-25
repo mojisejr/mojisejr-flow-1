@@ -54,15 +54,21 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 3. **Step 0: Write Tests First (Red Phase)** ⚠️ MANDATORY:
    ```bash
-   # Create test files BEFORE implementing code
+   # Create centralized test directory structure (if doesn't exist)
+   mkdir -p tests/{unit,integration,fixtures,helpers}
+
+   # Create test files BEFORE implementing code in tests/ directory ONLY
    # Tests should fail initially (Red phase)
    [test command]
    # Expected: Tests fail (no implementation yet)
    ```
-   - Write comprehensive unit tests for the new functionality
-   - Write integration tests for API endpoints or service integrations
+   - **Create test directory structure**: Ensure `tests/` directory with subdirectories exists
+   - **Write tests ONLY in tests/ directory**: Never create test files in source directories
+   - Write comprehensive unit tests in `tests/unit/` for the new functionality
+   - Write integration tests in `tests/integration/` for API endpoints or service integrations
+   - Place test data and utilities in `tests/fixtures/` and `tests/helpers/`
    - Tests document the expected behavior before code exists
-   - This ensures Test-Driven Development (TDD) workflow
+   - This ensures Test-Driven Development (TDD) workflow with centralized organization
 
 4. **Mode-Specific Execution**:
 
@@ -84,6 +90,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 ## Validation Requirements (100% required):
    ```bash
    ✅ Test must be written BEFORE code implementation (Red Phase)
+   ✅ Test files must be created in tests/ directory ONLY (Centralized organization)
    ✅ Test coverage must be comprehensive for new/modified code
    ✅ Tests must PASS (Green Phase complete)
    [build command]     # Build validation (e.g., npm run build, cargo build --release)
@@ -98,9 +105,11 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 The Red-Green-Refactor cycle is the core of Test-Driven Development:
 
 ### 🔴 Red Phase (Tests First)
-- **Write failing tests** for the functionality you want to implement
+- **Create test directory structure**: `mkdir -p tests/{unit,integration,fixtures,helpers}`
+- **Write failing tests in tests/ directory ONLY** for the functionality you want to implement
 - Tests document the expected behavior
 - Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+- **NEVER** create test files outside `tests/` directory
 
 ### 🟢 Green Phase (Minimal Implementation)
 - **Write minimal code** to make the failing tests pass
@@ -117,8 +126,9 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 
 ### Complete TDD Workflow Example
 ```bash
-# Step 1: RED - Create failing tests
-# Write test file following project conventions
+# Step 1: RED - Create failing tests in centralized tests/ directory
+mkdir -p tests/{unit,integration,fixtures,helpers}
+# Write test file in tests/unit/ or tests/integration/ following project conventions
 [test command]                              # → FAILS (no implementation)
 
 # Step 2: GREEN - Implement minimal code
@@ -136,6 +146,7 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 [build command]                             # ✅ 100% SUCCESS
 [lint command]                              # ✅ 100% SUCCESS
 [test command]                              # ✅ 100% SUCCESS
+# All tests located in centralized tests/ directory ✅
 ```
 
 ## Commit Format
@@ -145,7 +156,8 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
    git commit -m "feat: [feature description]
 
    - Address #[issue-number]: [task title]
-   - Test-first implemented: Tests written before code implementation
+   - Test-first implemented: Tests written before code implementation in tests/ directory
+   - Centralized test organization: All tests in tests/ directory with proper structure
    - Red-Green-Refactor cycle followed (Red → Green → Refactor)
    - Build validation: 100% PASS ([build command])
    - Lint validation: 100% PASS ([lint command])
@@ -169,7 +181,8 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 - Next steps for human developer
 
 **Human Developer Responsibilities**:
-- Write tests FIRST (Red phase)
+- Create test directory structure: `mkdir -p tests/{unit,integration,fixtures,helpers}`
+- Write tests FIRST in tests/ directory ONLY (Red phase)
 - Execute implementation according to task requirements
 - Run all validations before committing
 - Use proper commit format
@@ -178,7 +191,9 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 ### COPILOT Mode
 
 **Automatic Execution**:
-- Complete TDD workflow (tests first!)
+- Create test directory structure: `mkdir -p tests/{unit,integration,fixtures,helpers}`
+- Complete TDD workflow (tests first in tests/ directory!)
+- Enforce centralized test organization
 - All validation steps
 - Proper commit formatting
 - Branch creation and push
@@ -189,7 +204,8 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 - **Issue not found**: Clear error with issue number
 - **Invalid environment**: Git status and directory checks
 - **Validation failures**: Stop workflow and report errors
-- **TDD violations**: Error if tests not written first
+- **TDD violations**: Error if tests not written first or not in tests/ directory
+- **Test directory violations**: Error if test files created outside tests/ directory
 - **Mode-specific**: Provide appropriate guidance per mode
 
 ## Integration
@@ -210,7 +226,8 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development:
 - Always works from **staging** branch as base (never from main)
 - Feature branch naming is strictly enforced
 - 100% validation is mandatory before commits
-- **Test-Driven Development is MANDATORY** - Tests must be written before code
+- **Test-Driven Development is MANDATORY** - Tests must be written before code in tests/ directory
+- **Centralized test organization is ENFORCED** - All tests must be in tests/ directory structure
 - Mode affects who performs implementation steps
 - **PR always goes to staging** - developer handles staging → main merge
 - Commands adapt to project type (Node.js, Rust, Python, etc.)

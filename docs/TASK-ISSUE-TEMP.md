@@ -44,16 +44,26 @@
 - No additional features or modifications allowed
 
 ### 🧪 TEST-FIRST REQUIREMENTS (MANDATORY)
-**Tests to write BEFORE code implementation:**
-- [ ] Unit test: [test name] - [what should pass]
-- [ ] Integration test: [test name] - [API/service behavior]
-- [ ] Edge case test: [test name] - [boundary condition]
+**Tests to write BEFORE code implementation in tests/ directory ONLY:**
+- [ ] Unit test: tests/unit/[test-name] - [what should pass]
+- [ ] Integration test: tests/integration/[test-name] - [API/service behavior]
+- [ ] Edge case test: tests/unit/[test-name] - [boundary condition]
+
+**Test Location Requirements:**
+- [ ] All test files created in `tests/` directory structure ONLY
+- [ ] Unit tests in `tests/unit/` subdirectory
+- [ ] Integration tests in `tests/integration/` subdirectory
+- [ ] Test fixtures in `tests/fixtures/` subdirectory
+- [ ] Test utilities in `tests/helpers/` subdirectory
+- [ ] NEVER create test files in source directories
 
 **Test Acceptance Criteria:**
+- [ ] Create test directory: `mkdir -p tests/{unit,integration,fixtures,helpers}`
 - [ ] Tests must fail initially (Red phase - before implementation)
 - [ ] Tests document expected behavior
 - [ ] All tests pass after implementation (Green phase)
 - [ ] Code is refactored while tests remain passing (Refactor phase)
+- [ ] All test files located in centralized tests/ directory
 
 ### 📦 DELIVERABLE (MANDATORY)
 **This task creates ONE complete deliverable:**
@@ -71,9 +81,15 @@
 
 ### 📁 FILES TO CREATE (EXACT LIST)
 ```
+# Source files
 src/[exact-path]/[filename].tsx
-src/[exact-path]/[filename].test.tsx
 lib/[exact-path]/[service].ts
+
+# Test files (CENTRALIZED tests/ directory ONLY)
+tests/unit/[filename].test.tsx
+tests/integration/[service].test.ts
+tests/fixtures/[test-data].json
+tests/helpers/[test-utility].ts
 ```
 
 ### 🔧 EXACT IMPLEMENTATION REQUIREMENTS
@@ -103,10 +119,14 @@ ALTER POLICY ...;
 - **Thai Language Support**: Proper font loading and text handling
 
 ### 🧪 TESTING REQUIREMENTS
-- **Unit Tests**: All core functions and utilities (coverage targets set per project)
-- **Component Tests**: UI component tests (if applicable)
-- **Integration Tests**: API routes and database operations (if applicable)
+- **Centralized Test Directory**: ALL tests must be in `tests/` directory structure
+- **Unit Tests**: All core functions and utilities in `tests/unit/` (coverage targets set per project)
+- **Component Tests**: UI component tests in `tests/unit/` (if applicable)
+- **Integration Tests**: API routes and database operations in `tests/integration/` (if applicable)
+- **Test Fixtures**: Test data and mock objects in `tests/fixtures/`
+- **Test Utilities**: Common test setup and helpers in `tests/helpers/`
 - **Manual Testing**: Any environment-specific manual checks (e.g., mobile webview)
+- **Test Location Validation**: NEVER create test files outside `tests/` directory
 
 ### ✅ ACCEPTANCE CRITERIA (100% MANDATORY)
 - [ ] Build command passes successfully with zero errors/warnings (`[build command]`)
@@ -114,11 +134,13 @@ ALTER POLICY ...;
 - [ ] Language/typecheck passes (e.g., TypeScript/other) (`[typecheck command]`)
 - [ ] All tests pass (`[test command]`) with zero failures
 - [ ] Test-first implemented (tests written before code)
+- [ ] Centralized test organization: All tests in `tests/` directory structure
 - [ ] Test coverage complete for all new code paths
 - [ ] Red-Green-Refactor cycle followed (Red → Green → Refactor)
 - [ ] Single deliverable works end-to-end
 - [ ] No unintended side effects
 - [ ] Code follows project patterns and style guidelines
+- [ ] Test directory structure created: `tests/{unit,integration,fixtures,helpers}`
 
 ### 🔄 GIT WORKFLOW (MANDATORY)
 - **Branch Name**: `feature/task-[XXX]-[X]-[description]`
@@ -139,9 +161,11 @@ ALTER POLICY ...;
   ```
 
 ### 🚨 VALIDATION CHECKLIST (MANDATORY BEFORE COMMIT)
-- [ ] **TDD RED PHASE**: Tests written FIRST and failing (before implementation)
+- [ ] **TDD RED PHASE**: Tests written FIRST in `tests/` directory and failing (before implementation)
 - [ ] **TDD GREEN PHASE**: Implementation makes all tests pass
 - [ ] **TDD REFACTOR PHASE**: Code improved while tests remain passing
+- [ ] **Test Directory Structure**: `mkdir -p tests/{unit,integration,fixtures,helpers}` created
+- [ ] **Test Location Validation**: All test files located in `tests/` directory ONLY
 - [ ] `[build command]` → Must show success with zero errors/warnings
 - [ ] `[lint command]` → Must show success with zero violations
 - [ ] `[format command]` → Must show success (no changes needed)
@@ -162,7 +186,10 @@ ALTER POLICY ...;
 
 2. **TDD RED PHASE** (MANDATORY FIRST):
    ```bash
-   # Write comprehensive tests BEFORE implementing code
+   # Create centralized test directory structure
+   mkdir -p tests/{unit,integration,fixtures,helpers}
+
+   # Write comprehensive tests BEFORE implementing code in tests/ directory ONLY
    [test command]     # Must FAIL (Red phase - no implementation yet)
    ```
 
@@ -187,7 +214,8 @@ ALTER POLICY ...;
    git commit -m "feat: [single deliverable]
 
    - Address TASK-XXX-X: [task title]
-   - Test-first implemented: Tests written before code implementation
+   - Test-first implemented: Tests written before code implementation in tests/ directory
+   - Centralized test organization: All tests in tests/ directory with proper structure
    - Red-Green-Refactor cycle followed (Red → Green → Refactor)
    - Build validation: 100% PASS ([build command])
    - Linter validation: 100% PASS ([lint command])

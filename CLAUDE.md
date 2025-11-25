@@ -85,6 +85,7 @@ All commands MUST:
 - ✅ **ALWAYS** use template-guided workflow with proper context validation
 - ✅ **ALWAYS** verify code formatting: `[format command]`
 - ✅ **ALWAYS** use `.tmp/` folder for temporary files and clean up immediately after use
+- ✅ **ALWAYS** create test files in centralized `tests/` directory only
 
 ---
 
@@ -319,7 +320,10 @@ The `/init` command automatically handles project integration for both new and e
 
 2. **🔴 Red Phase (Tests First)** ⚠️ MANDATORY:
    ```bash
-   # Write tests BEFORE code implementation
+   # Create centralized test directory structure
+   mkdir -p tests/{unit,integration,fixtures}
+
+   # Write tests BEFORE code implementation in tests/ directory ONLY
    [test command]  # Must FAIL (no implementation yet)
    ```
 
@@ -445,9 +449,11 @@ Commands automatically detected from project configuration:
 The Red-Green-Refactor cycle is the core of Test-Driven Development workflow:
 
 #### 🔴 Red Phase (Tests First)
-- **Write failing tests** for the functionality you want to implement
+- **Create test directory structure**: `mkdir -p tests/{unit,integration,fixtures,helpers}`
+- **Write failing tests** in `tests/` directory ONLY for the functionality you want to implement
 - Tests document the expected behavior before code exists
 - Run tests: `[test command]` → tests FAIL (because code doesn't exist yet)
+- **NEVER** create test files outside `tests/` directory
 
 #### 🟢 Green Phase (Minimal Implementation)
 - **Write minimal code** to make the failing tests pass
@@ -479,7 +485,7 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development workflow:
 - ✅ Refactor while tests pass (Refactor Phase)
 - ✅ Red-Green-Refactor cycle for ALL implementations
 
-**Benefits**: Higher quality ✅ • Better design ✅ • Regression prevention ✅ • Living docs ✅
+**Benefits**: Higher quality ✅ • Better design ✅ • Regression prevention ✅ • Living docs ✅ • Centralized organization ✅
 
 ---
 
@@ -501,6 +507,11 @@ The Red-Green-Refactor cycle is the core of Test-Driven Development workflow:
 │   ├── services/               # Business logic and integrations
 │   ├── models/                 # Data structures and types
    └── db/                     # Database helpers and migrations
+├── tests/                      # ⭐ CENTRALIZED TEST DIRECTORY (MANDATORY)
+│   ├── unit/                   # Unit tests for individual components
+│   ├── integration/            # Integration tests for component interactions
+│   ├── fixtures/               # Test data, mock objects, and utilities
+│   └── helpers/                # Test utilities and common test setup
 ├── migrations/                 # Database migrations (if applicable)
 └── .env.example                # Environment variables template
 ```
